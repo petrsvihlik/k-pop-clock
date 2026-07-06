@@ -11,9 +11,10 @@ import { DEFAULT_CONFIG, type GameplayConfig } from "./config.ts";
 import { ISLANDS, ISLAND_STICKER_IDS, STICKERS, type Sticker } from "./data.ts";
 import { SPEECH_LANG, STR, type Lang, type Strings } from "./i18n.ts";
 import { board, genQ, type Card, type Question } from "./questions.ts";
+import { from24, timeWords, type Period } from "./time.ts";
 import { Sounds } from "./sounds.ts";
 
-export type Screen = "map" | "play" | "stickers";
+export type Screen = "map" | "play" | "stickers" | "sandbox" | "intro";
 export type Feedback = null | "correct" | "wrong";
 
 export interface ConfettiBit {
@@ -45,12 +46,24 @@ export interface GameState {
   bonus: boolean;
   extraName: string;
   confetti: ConfettiBit[];
+
+  // sandbox (free-play clock)
+  sbH: number;
+  sbM: number;
+  sbPeriod: Period;
+  sbLive: boolean;
+  sbHideMin: boolean;
+
+  // intro tutorial
+  introStep: number;
+  seenIntro: boolean;
 }
 
 interface SaveData {
   lang: Lang;
   done: Record<string, boolean>;
   stickers: string[];
+  seenIntro: boolean;
 }
 
 const SAVE_KEY = "timeislands_v1";
@@ -65,21 +78,24 @@ export class TimeIslandsGame {
   private readonly sounds = new Sounds(this.audio);
   private readonly speech: Speech;
   private drag: "hour" | "minute" | null = null;
+  private dragTarget: "set" | "sandbox" = "set";
 
   constructor(config: GameplayConfig = DEFAULT_CONFIG) {
     this.config = config;
     this.speech = new Speech(config.voiceOn);
     this.save_ = new LocalSave<SaveData>({
       key: SAVE_KEY,
-      defaults: { lang: "cs", done: {}, stickers: [] },
+      defaults: { lang: "cs", done: {}, stickers: [], seenIntro: false },
     });
     const saved = this.save_.load();
+    const now = this.nowParts();
 
     this.store = new Store<GameState>({
       lang: saved.lang,
       done: saved.done,
       stickers: saved.stickers,
-      screen: "map",
+      // First-time visitors land in the guided tutorial.
+      screen: saved.seenIntro ? "map" : "intro",
       island: null,
       q: null,
       correct: 0,
@@ -95,6 +111,13 @@ export class TimeIslandsGame {
       bonus: false,
       extraName: "",
       confetti: [],
+      sbH: now.h12,
+      sbM: now.m,
+      sbPeriod: now.period,
+      sbLive: false,
+      sbHideMin: false,
+      introStep: 0,
+      seenIntro: saved.seenIntro,
     });
   }
 
@@ -113,7 +136,26 @@ export class TimeIslandsGame {
   }
 
   private save(): void {
-    this.save_.save({ lang: this.s.lang, done: this.s.done, stickers: this.s.stickers });
+    this.save_.save({
+      lang: this.s.lang,
+      done: this.s.done,
+      stickers: this.s.stickers,
+      seenIntro: this.s.seenIntro,
+    });
+  }
+
+  /** Real device time, rounded to the configured minute snap. */
+  private nowParts(): { h12: number; m: number; period: Period; h24: number } {
+    const dt = new Date();
+    const snap = this.config.handSnap === 1 ? 1 : 5;
+    let h24 = dt.getHours();
+    let m = Math.round(dt.getMinutes() / snap) * snap;
+    if (m >= 60) {
+      m = 0;
+      h24 = (h24 + 1) % 24;
+    }
+    const { h12, period } = from24(h24);
+    return { h12, m, period, h24 };
   }
 
   speak(text: string): void {
@@ -136,6 +178,83 @@ export class TimeIslandsGame {
 
   replay(): void {
     if (this.s.island !== null) this.start(this.s.island);
+  }
+
+  // ---------- sandbox (free play) ----------
+  goSandbox(): void {
+    this.sounds.tap();
+    const n = this.nowParts();
+    this.store.setState({ screen: "sandbox", sbH: n.h12, sbM: n.m, sbPeriod: n.period, sbLive: false });
+  }
+
+  /** Snap the sandbox clock to the real device time. */
+  setSandboxNow(): void {
+    const n = this.nowParts();
+    this.store.setState({ sbH: n.h12, sbM: n.m, sbPeriod: n.period });
+  }
+
+  toggleSbLive(): void {
+    const live = !this.s.sbLive;
+    this.sounds.tap();
+    this.store.setState({ sbLive: live }, () => {
+      if (live) this.setSandboxNow();
+    });
+  }
+
+  toggleSbPeriod(): void {
+    this.sounds.tap();
+    this.store.setState({ sbPeriod: this.s.sbPeriod === "am" ? "pm" : "am", sbLive: false });
+  }
+
+  toggleSbHideMin(): void {
+    this.sounds.tap();
+    const hide = !this.s.sbHideMin;
+    this.store.setState(hide ? { sbHideMin: true, sbM: 0 } : { sbHideMin: false });
+  }
+
+  speakSandbox(): void {
+    this.speak(timeWords(this.s.sbH, this.s.sbM, this.s.lang));
+  }
+
+  // ---------- intro tutorial ----------
+  goIntro(): void {
+    this.sounds.tap();
+    this.store.setState({ screen: "intro", introStep: 0 }, () => this.speakIntro(0));
+  }
+
+  introStepCount(): number {
+    return this.T().introSteps.length;
+  }
+
+  introNext(): void {
+    const n = this.s.introStep + 1;
+    if (n >= this.introStepCount()) {
+      this.exitIntro();
+      return;
+    }
+    this.sounds.tap();
+    this.store.setState({ introStep: n }, () => this.speakIntro(n));
+  }
+
+  introPrev(): void {
+    if (this.s.introStep === 0) {
+      this.exitIntro();
+      return;
+    }
+    const n = this.s.introStep - 1;
+    this.sounds.tap();
+    this.store.setState({ introStep: n }, () => this.speakIntro(n));
+  }
+
+  /** Leave the tutorial for the map, remembering it has been seen. */
+  exitIntro(): void {
+    this.speech.cancel();
+    this.store.setState({ screen: "map", seenIntro: true }, () => this.save());
+  }
+
+  private speakIntro(i: number): void {
+    const step = this.T().introSteps[i];
+    if (step) this.speak(`${step.title}. ${step.body}`);
   }
 
   // ---------- flow ----------
@@ -313,17 +432,30 @@ export class TimeIslandsGame {
     return { a, dist: Math.hypot(x, y) };
   }
 
-  handDown(e: PointerEvent, svg: SVGSVGElement): void {
-    if (!this.s.q || this.s.q.kind !== "set") return;
+  private beginDrag(e: PointerEvent, svg: SVGSVGElement, target: "set" | "sandbox"): void {
     const p = this.angleFrom(e, svg);
     if (p.dist > 98) return;
-    this.drag = p.dist < 62 ? "hour" : "minute";
+    this.dragTarget = target;
+    // In beginner mode the minute hand is hidden, so only the hour moves.
+    const hourOnly = target === "sandbox" && this.s.sbHideMin;
+    this.drag = hourOnly || p.dist < 62 ? "hour" : "minute";
     try {
       svg.setPointerCapture(e.pointerId);
     } catch {
       /* ignore */
     }
     this.applyDrag(p.a);
+  }
+
+  handDown(e: PointerEvent, svg: SVGSVGElement): void {
+    if (!this.s.q || this.s.q.kind !== "set") return;
+    this.beginDrag(e, svg, "set");
+  }
+
+  /** Sandbox clock drag — turns off live mode so she can explore freely. */
+  sbHandDown(e: PointerEvent, svg: SVGSVGElement): void {
+    if (this.s.sbLive) this.store.setState({ sbLive: false });
+    this.beginDrag(e, svg, "sandbox");
   }
 
   handMove(e: PointerEvent, svg: SVGSVGElement): void {
@@ -336,17 +468,20 @@ export class TimeIslandsGame {
   }
 
   private applyDrag(a: number): void {
+    const toSet = this.dragTarget === "set";
     if (this.drag === "hour") {
       let h = Math.round(a / 30) % 12;
       if (h === 0) h = 12;
-      if (h !== this.s.setH) {
-        this.store.setState({ setH: h });
+      const cur = toSet ? this.s.setH : this.s.sbH;
+      if (h !== cur) {
+        this.store.setState(toSet ? { setH: h } : { sbH: h });
         this.sounds.tap();
       }
     } else {
       const snap = this.config.handSnap === 1 ? 1 : 5;
       const m = (Math.round(a / 6 / snap) * snap) % 60;
-      if (m !== this.s.setM) this.store.setState({ setM: m });
+      const cur = toSet ? this.s.setM : this.s.sbM;
+      if (m !== cur) this.store.setState(toSet ? { setM: m } : { sbM: m });
     }
   }
 }

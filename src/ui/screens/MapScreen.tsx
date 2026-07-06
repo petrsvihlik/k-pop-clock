@@ -32,12 +32,30 @@ export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameS
         </div>
       </div>
 
-      <button
-        onClick={() => game.goStickers()}
-        style="margin-top:10px;background:#fff7f0;color:#2a1a4a;border:3px solid #2a1a4a;border-radius:999px;padding:10px 22px;font-weight:800;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #120a2e"
-      >
-        {L.stickers} · {stickerCount}
-      </button>
+      {/* learning tools + band */}
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px">
+        <button
+          onClick={() => game.goIntro()}
+          class="press-3"
+          style="background:#a78bfa;color:#241a52;border:3px solid #2a1a4a;border-radius:999px;padding:10px 20px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #120a2e"
+        >
+          📖 {L.startHere}
+        </button>
+        <button
+          onClick={() => game.goSandbox()}
+          class="press-3"
+          style="background:#4fd8e8;color:#123a42;border:3px solid #2a1a4a;border-radius:999px;padding:10px 20px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #120a2e"
+        >
+          🎡 {L.playground}
+        </button>
+        <button
+          onClick={() => game.goStickers()}
+          class="press-3"
+          style="background:#fff7f0;color:#2a1a4a;border:3px solid #2a1a4a;border-radius:999px;padding:10px 20px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #120a2e"
+        >
+          {L.stickers} · {stickerCount}
+        </button>
+      </div>
 
       {/* island chain */}
       <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:36px;padding:38px 0 10px 0;width:100%">

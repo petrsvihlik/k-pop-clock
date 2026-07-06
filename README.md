@@ -7,7 +7,23 @@ collect a band of character stickers along the way. Trilingual (Czech, English,
 Spanish) with spoken prompts.
 
 Implemented from a [Claude Design](https://claude.ai/design) prototype
-(`Time Islands.dc.html`).
+(`Time Islands.dc.html`), then extended with a set of learning tools.
+
+## Learning tools
+
+Beyond the seven quiz islands, the app teaches the underlying concepts:
+
+- **📖 Start here** — a short, narrated (text-to-speech) tutorial that introduces
+  the clock face, the hour vs minute hand, the key "one full lap of the minute
+  hand = one hour" animation, "o'clock", and counting minutes by fives. Shown
+  automatically on a first visit.
+- **🎡 Playground** — a free-play clock. As the child drags the hands, the same
+  time is shown live in every form at once — analog, 12-hour, 24-hour, AM/PM,
+  and in words — so the mappings between them wire up naturally. Includes a
+  **day/night sky** (sun, moon, stars) that shifts with the time, **daily-routine
+  anchors** (breakfast, school, lunch… pop up at their times), a **"Now"/"Live"**
+  mode that follows the real device clock, and a **beginner mode** that hides the
+  minute hand.
 
 ## Stack
 
@@ -43,12 +59,14 @@ src/
     data.ts               islands + collectible stickers (the content)
     i18n.ts               cs / en / es strings
     time.ts               time formatting + clock-hand geometry
+    daytime.ts            time-of-day -> sky phase, sun/moon position
+    routine.ts            daily-routine anchors (breakfast, school, …)
     questions.ts          per-island question generators (pure functions)
     game.ts               TimeIslandsGame controller (owns all state)
     config.ts             tunable gameplay settings
   ui/                   Preact view layer (a pure projection of game state)
-    components/           ClockFace, Creature, Mascot, LightSweeps
-    screens/              Map, Level, StickerBook, CompleteOverlay
+    components/           ClockFace, Creature, Mascot, LightSweeps, SkyBackground
+    screens/              Map, Level, StickerBook, CompleteOverlay, Sandbox, Intro
     App.tsx, useStore.ts
   main.tsx              bootstrap
 ```

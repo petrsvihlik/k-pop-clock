@@ -19,6 +19,18 @@ export const hourAngle = (h: number, m: number): number => (h % 12) * 30 + m * 0
 /** Minute-hand angle. */
 export const minuteAngle = (m: number): number => m * 6;
 
+export type Period = "am" | "pm";
+
+/** 12-hour + AM/PM → 24-hour. (12 AM = 0, 12 PM = 12.) */
+export const to24 = (h12: number, period: Period): number =>
+  period === "pm" ? (h12 % 12) + 12 : h12 % 12;
+
+/** 24-hour → 12-hour + AM/PM. */
+export const from24 = (h24: number): { h12: number; period: Period } => ({
+  h12: h24 % 12 === 0 ? 12 : h24 % 12,
+  period: h24 < 12 ? "am" : "pm",
+});
+
 /** Spoken form of a time, with language-specific grammar. */
 export function timeWords(h: number, m: number, lang: Lang): string {
   if (lang === "cs") {

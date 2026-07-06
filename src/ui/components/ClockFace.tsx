@@ -58,6 +58,10 @@ export interface ClockFaceProps {
   centerR?: number;
   /** Draw draggable knobs on the hand tips (the "set the hands" clock). */
   knobs?: boolean;
+  /** Blink a hand to draw attention (tutorial). */
+  pulseHand?: "hour" | "minute";
+  /** Hide the minute hand entirely (beginner mode). */
+  showMinute?: boolean;
   interactive?: Interactive;
 }
 
@@ -73,6 +77,8 @@ export function ClockFace({
   minWidth = 7,
   centerR = 8,
   knobs = false,
+  pulseHand,
+  showMinute = true,
   interactive,
 }: ClockFaceProps) {
   return (
@@ -119,14 +125,16 @@ export function ClockFace({
         </text>
       ))}
 
-      <g transform={`rotate(${hourAngle} 100 100)`}>
+      <g transform={`rotate(${hourAngle} 100 100)`} class={pulseHand === "hour" ? "pulse" : undefined}>
         <line x1="100" y1="108" x2="100" y2="58" stroke="#ff5fa2" stroke-width={hourWidth} stroke-linecap="round" />
         {knobs && <circle cx="100" cy="58" r="11" fill="#ff5fa2" stroke="#2a1a4a" stroke-width="3" />}
       </g>
-      <g transform={`rotate(${minAngle} 100 100)`}>
-        <line x1="100" y1="110" x2="100" y2="32" stroke="#4fd8e8" stroke-width={minWidth} stroke-linecap="round" />
-        {knobs && <circle cx="100" cy="32" r="10" fill="#4fd8e8" stroke="#2a1a4a" stroke-width="3" />}
-      </g>
+      {showMinute && (
+        <g transform={`rotate(${minAngle} 100 100)`} class={pulseHand === "minute" ? "pulse" : undefined}>
+          <line x1="100" y1="110" x2="100" y2="32" stroke="#4fd8e8" stroke-width={minWidth} stroke-linecap="round" />
+          {knobs && <circle cx="100" cy="32" r="10" fill="#4fd8e8" stroke="#2a1a4a" stroke-width="3" />}
+        </g>
+      )}
       <circle cx="100" cy="100" r={centerR} fill="#2a1a4a" />
     </svg>
   );

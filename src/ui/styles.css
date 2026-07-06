@@ -33,6 +33,30 @@ button {
   transform: scale(0.92);
 }
 
+/* Tutorial: blink a highlighted clock hand. transform-box keeps the rotation
+   transform on the <g> intact while animating opacity. */
+.pulse {
+  animation: ti-blink 0.7s ease-in-out infinite;
+}
+@keyframes ti-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes ti-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @keyframes ti-pop {
   0% {
     transform: scale(0.6);

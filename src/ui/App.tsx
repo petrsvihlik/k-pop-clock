@@ -5,6 +5,8 @@ import { MapScreen } from "@ui/screens/MapScreen.tsx";
 import { LevelScreen } from "@ui/screens/LevelScreen.tsx";
 import { StickerScreen } from "@ui/screens/StickerScreen.tsx";
 import { CompleteOverlay } from "@ui/screens/CompleteOverlay.tsx";
+import { SandboxScreen } from "@ui/screens/SandboxScreen.tsx";
+import { IntroScreen } from "@ui/screens/IntroScreen.tsx";
 
 export function App({ game }: { game: TimeIslandsGame }) {
   const state = useStore(game.store);
@@ -15,6 +17,8 @@ export function App({ game }: { game: TimeIslandsGame }) {
       {state.screen === "map" && <MapScreen game={game} state={state} />}
       {state.screen === "play" && <LevelScreen game={game} state={state} />}
       {state.screen === "stickers" && <StickerScreen game={game} state={state} />}
+      {state.screen === "sandbox" && <SandboxScreen game={game} state={state} />}
+      {state.screen === "intro" && <IntroScreen game={game} state={state} />}
       {state.showComplete && <CompleteOverlay game={game} state={state} />}
     </div>
   );

@@ -37,6 +37,25 @@ export interface Strings {
   friendNote: string;
   praise: string[];
   islands: Record<string, string>;
+
+  // learning tools
+  startHere: string;
+  playground: string;
+  now: string;
+  live: string;
+  hideMinute: string;
+  dragHint: string;
+  form12: string;
+  form24: string;
+  ampmLabel: string;
+  inWords: string;
+  routineNow: string;
+  introNext: string;
+  introBack: string;
+  introDone: string;
+  phaseNames: Record<string, string>;
+  routineNames: Record<string, string>;
+  introSteps: { title: string; body: string }[];
 }
 
 export const STR: Record<Lang, Strings> = {
@@ -71,6 +90,46 @@ export const STR: Record<Lang, Strings> = {
       match: "Spojovačka",
       set: "Nastav ručičky",
     },
+    startHere: "Začni tady",
+    playground: "Hřiště",
+    now: "Teď",
+    live: "Naživo",
+    hideMinute: "Skrýt minuty",
+    dragHint: "Chytni ručičky a otáčej!",
+    form12: "12 hodin",
+    form24: "24 hodin",
+    ampmLabel: "dop. / odp.",
+    inWords: "Slovy",
+    routineNow: "Čas na: {name}",
+    introNext: "Dál",
+    introBack: "Zpět",
+    introDone: "Pojďme hrát!",
+    phaseNames: {
+      night: "Noc",
+      dawn: "Svítání",
+      morning: "Ráno",
+      noon: "Poledne",
+      afternoon: "Odpoledne",
+      dusk: "Západ slunce",
+      evening: "Večer",
+    },
+    routineNames: {
+      breakfast: "Snídaně",
+      school: "Škola",
+      lunch: "Oběd",
+      play: "Hraní",
+      dinner: "Večeře",
+      bath: "Koupel",
+      bed: "Spinkání",
+    },
+    introSteps: [
+      { title: "Tohle jsou hodiny!", body: "Čísla jdou od 1 do 12 pořád dokola v kruhu." },
+      { title: "Malá ručička", body: "Krátká a silná RŮŽOVÁ ručička ukazuje hodiny." },
+      { title: "Velká ručička", body: "Dlouhá a tenká MODRÁ ručička ukazuje minuty." },
+      { title: "Fungují spolu", body: "Koukej! Když modrá ručička oběhne celé kolo, růžová se posune na další číslo. To je celá jedna hodina!" },
+      { title: "Celá hodina", body: "Když modrá ručička míří rovnou nahoru na 12, je přesně celá hodina. Třeba 3 hodiny!" },
+      { title: "Počítej po pěti", body: "Minuty počítej dokola po pěti: 5, 10, 15, 20… až do 60." },
+    ],
   },
   en: {
     title: "Time Islands",
@@ -103,6 +162,46 @@ export const STR: Record<Lang, Strings> = {
       match: "Matching",
       set: "Set the Hands",
     },
+    startHere: "Start here",
+    playground: "Playground",
+    now: "Now",
+    live: "Live",
+    hideMinute: "Hide minutes",
+    dragHint: "Grab the hands and spin!",
+    form12: "12-hour",
+    form24: "24-hour",
+    ampmLabel: "AM / PM",
+    inWords: "In words",
+    routineNow: "Time for: {name}",
+    introNext: "Next",
+    introBack: "Back",
+    introDone: "Let's play!",
+    phaseNames: {
+      night: "Night",
+      dawn: "Dawn",
+      morning: "Morning",
+      noon: "Midday",
+      afternoon: "Afternoon",
+      dusk: "Sunset",
+      evening: "Evening",
+    },
+    routineNames: {
+      breakfast: "Breakfast",
+      school: "School",
+      lunch: "Lunch",
+      play: "Playtime",
+      dinner: "Dinner",
+      bath: "Bath time",
+      bed: "Bedtime",
+    },
+    introSteps: [
+      { title: "This is a clock!", body: "The numbers go from 1 to 12, all the way around in a circle." },
+      { title: "The hour hand", body: "The short, chunky PINK hand tells you the hour." },
+      { title: "The minute hand", body: "The long, thin BLUE hand tells you the minutes." },
+      { title: "They work together", body: "Watch! When the blue hand goes all the way around once, the pink hand moves to the next number. That's one whole hour!" },
+      { title: "O'clock", body: "When the blue hand points straight up to 12, we say 'o'clock'. Like 3 o'clock!" },
+      { title: "Count by fives", body: "For minutes, count around by fives: 5, 10, 15, 20… all the way to 60." },
+    ],
   },
   es: {
     title: "Islas del Tiempo",
@@ -135,5 +234,45 @@ export const STR: Record<Lang, Strings> = {
       match: "Parejas",
       set: "Pon las agujas",
     },
+    startHere: "Empieza aquí",
+    playground: "Zona de juego",
+    now: "Ahora",
+    live: "En vivo",
+    hideMinute: "Ocultar minutos",
+    dragHint: "¡Agarra las agujas y gíralas!",
+    form12: "12 horas",
+    form24: "24 horas",
+    ampmLabel: "AM / PM",
+    inWords: "En palabras",
+    routineNow: "Hora de: {name}",
+    introNext: "Siguiente",
+    introBack: "Atrás",
+    introDone: "¡A jugar!",
+    phaseNames: {
+      night: "Noche",
+      dawn: "Amanecer",
+      morning: "Mañana",
+      noon: "Mediodía",
+      afternoon: "Tarde",
+      dusk: "Atardecer",
+      evening: "Anochecer",
+    },
+    routineNames: {
+      breakfast: "Desayuno",
+      school: "Escuela",
+      lunch: "Almuerzo",
+      play: "Juego",
+      dinner: "Cena",
+      bath: "Baño",
+      bed: "A dormir",
+    },
+    introSteps: [
+      { title: "¡Esto es un reloj!", body: "Los números van del 1 al 12, dando toda la vuelta en círculo." },
+      { title: "La aguja de la hora", body: "La aguja corta y gordita ROSA marca la hora." },
+      { title: "La aguja de los minutos", body: "La aguja larga y fina AZUL marca los minutos." },
+      { title: "Trabajan juntas", body: "¡Mira! Cuando la aguja azul da una vuelta entera, la rosa pasa al siguiente número. ¡Es una hora entera!" },
+      { title: "En punto", body: "Cuando la aguja azul apunta arriba al 12, decimos 'en punto'. ¡Como las 3 en punto!" },
+      { title: "Cuenta de cinco en cinco", body: "Para los minutos, cuenta de cinco en cinco: 5, 10, 15, 20… hasta 60." },
+    ],
   },
 };
