@@ -6,8 +6,8 @@ digital, any minute, a matching game, and a drag-the-hands challenge — and
 collect a band of character stickers along the way. Trilingual (Czech, English,
 Spanish) with spoken prompts.
 
-Implemented from a [Claude Design](https://claude.ai/design) prototype
-(`Time Islands.dc.html`), then extended with a set of learning tools.
+Built from an HTML design prototype (`Time Islands.dc.html`), then extended with
+a set of learning tools.
 
 ## Learning tools
 
