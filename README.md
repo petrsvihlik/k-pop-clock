@@ -1,0 +1,80 @@
+# Time Islands 🕐🎸
+
+A browser-only educational game for learning to read the clock. Play through
+seven "islands" — whole hours, halves & quarters, five-minute steps, 24-hour
+digital, any minute, a matching game, and a drag-the-hands challenge — and
+collect a band of character stickers along the way. Trilingual (Czech, English,
+Spanish) with spoken prompts.
+
+Implemented from a [Claude Design](https://claude.ai/design) prototype
+(`Time Islands.dc.html`).
+
+## Stack
+
+- **Vite + TypeScript + [Preact](https://preactjs.com/)** (~3 KB view layer)
+- **100% client-side.** No backend, no network calls. Progress persists to
+  `localStorage`; sounds are synthesised with the Web Audio API; prompts are
+  read aloud with the Web Speech API. The production build is static files that
+  drop onto GitHub Pages (or any static host) unchanged.
+
+## Run it
+
+```bash
+npm install
+npm run dev        # dev server with hot reload
+npm run build      # typecheck + static production build -> dist/
+npm run preview    # serve the built output
+```
+
+## Architecture
+
+The code is split so the reusable **engine** never depends on this particular
+game or on Preact — the idea is a foundation you can build more games on.
+
+```
+src/
+  engine/               framework-agnostic, reusable core
+    store.ts              reactive state container (React-style setState)
+    save.ts               versioned, fault-tolerant localStorage persistence
+    audio.ts              WebAudio synth (no audio files)
+    speech.ts             text-to-speech wrapper
+    rng.ts                random helpers
+  games/time-islands/   the game as data + logic (no rendering)
+    data.ts               islands + collectible stickers (the content)
+    i18n.ts               cs / en / es strings
+    time.ts               time formatting + clock-hand geometry
+    questions.ts          per-island question generators (pure functions)
+    game.ts               TimeIslandsGame controller (owns all state)
+    config.ts             tunable gameplay settings
+  ui/                   Preact view layer (a pure projection of game state)
+    components/           ClockFace, Creature, Mascot, LightSweeps
+    screens/              Map, Level, StickerBook, CompleteOverlay
+    App.tsx, useStore.ts
+  main.tsx              bootstrap
+```
+
+**Data flow:** `TimeIslandsGame` holds one `Store` of plain state. The UI
+subscribes via `useStore` and re-renders on change; user actions call methods on
+the game. Rendering concerns never leak into game logic, and game logic never
+imports Preact.
+
+## Extending it
+
+- **New level type** — add an entry to `ISLANDS` in `data.ts`, a generator
+  branch in `questions.ts`, and a render branch in `screens/LevelScreen.tsx`.
+- **New collectible** — add to `STICKERS` in `data.ts`; the `Creature` component
+  renders it from its traits.
+- **New language** — add a block to `STR` in `i18n.ts` and its BCP-47 tag to
+  `SPEECH_LANG`.
+- **A different game entirely** — reuse everything under `src/engine/` and write
+  a new `games/<name>/` + `ui/`.
+
+## Gameplay config
+
+`src/games/time-islands/config.ts`:
+
+| Setting             | Default | Meaning                                             |
+| ------------------- | ------- | --------------------------------------------------- |
+| `questionsPerLevel` | `8`     | Correct answers needed to finish a level (3–12).    |
+| `handSnap`          | `5`     | Minute granularity when dragging hands (`5` or `1`).|
+| `voiceOn`           | `true`  | Read prompts and praise aloud.                      |

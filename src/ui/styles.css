@@ -1,0 +1,124 @@
+/*
+ * Global styles. Most visual styling lives inline on components (ported 1:1 from
+ * the design prototype); this file holds only the page reset, web-font wiring,
+ * the shared keyframes, and small :active "press" helpers that stand in for the
+ * prototype's style-active behaviour.
+ */
+
+body {
+  margin: 0;
+  background: #1c1140;
+}
+
+a {
+  color: #4fd8e8;
+}
+a:hover {
+  color: #ff5fa2;
+}
+
+/* Buttons inherit the Baloo 2 face so inline styles stay in sync. */
+button {
+  font-family: "Baloo 2", system-ui, sans-serif;
+}
+
+/* Press feedback — replaces the prototype's per-element style-active. */
+.press-3:active {
+  transform: translateY(3px);
+}
+.press-4:active {
+  transform: translateY(4px);
+}
+.press-scale:active {
+  transform: scale(0.92);
+}
+
+@keyframes ti-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes ti-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+@keyframes ti-wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+@keyframes ti-fall {
+  0% {
+    transform: translateY(-40px) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(540deg);
+    opacity: 0.7;
+  }
+}
+@keyframes ti-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes ti-sweepA {
+  0%,
+  100% {
+    transform: rotate(-28deg);
+  }
+  50% {
+    transform: rotate(20deg);
+  }
+}
+@keyframes ti-sweepB {
+  0%,
+  100% {
+    transform: rotate(26deg);
+  }
+  50% {
+    transform: rotate(-18deg);
+  }
+}
+@keyframes ti-sweepC {
+  0%,
+  100% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(24deg);
+  }
+}
+@keyframes ti-sweepD {
+  0%,
+  100% {
+    transform: rotate(16deg);
+  }
+  50% {
+    transform: rotate(-26deg);
+  }
+}

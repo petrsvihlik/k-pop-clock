@@ -1,0 +1,20 @@
+{
+  "name": "k-pop-clock",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Time Islands — a client-side, browser-only educational game for learning to read the clock, built on a small extendable game engine.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "preact": "^10.29.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5"
+  }
+}
