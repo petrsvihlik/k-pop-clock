@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Daily catch-up: auto-merged Dependabot PRs land via the Actions bot token,
+  # whose pushes don't trigger push workflows.
+  schedule:
+    - cron: "0 4 * * *"
 
 # Allow the GITHUB_TOKEN to deploy to Pages.
 permissions:
