@@ -1,0 +1,21 @@
+# Weekly dependency updates, grouped into one PR per ecosystem.
+# PRs auto-merge once the CI build check passes (see dependabot-automerge.yml).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      npm:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
