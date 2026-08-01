@@ -68,7 +68,7 @@ export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameS
         </svg>
 
         {ISLANDS.map((isl, i) => {
-          const locked = i > 0 && !state.done[ISLANDS[i - 1].id];
+          const locked = game.isLocked(i);
           const done = !!state.done[isl.id];
           const offset = i % 2 === 0 ? -70 : 70;
           return (

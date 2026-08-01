@@ -30,6 +30,8 @@ export interface GameState {
   lang: Lang;
   done: Record<string, boolean>;
   stickers: string[];
+  /** Test cheat: every island playable this session (not saved). */
+  cheatUnlocked: boolean;
   screen: Screen;
   island: number | null;
   q: Question | null;
@@ -94,6 +96,7 @@ export class TimeIslandsGame {
       lang: saved.lang,
       done: saved.done,
       stickers: saved.stickers,
+      cheatUnlocked: false,
       // First-time visitors land in the guided tutorial.
       screen: saved.seenIntro ? "map" : "intro",
       island: null,
@@ -258,9 +261,20 @@ export class TimeIslandsGame {
   }
 
   // ---------- flow ----------
+  /** An island is locked until the previous one is done (unless cheated open). */
+  isLocked(i: number): boolean {
+    return !this.s.cheatUnlocked && i > 0 && !this.s.done[ISLANDS[i - 1].id];
+  }
+
+  /** Test cheat (typed "iddqd"): unlock every island for this session. */
+  unlockAll(): void {
+    if (this.s.cheatUnlocked) return;
+    this.sounds.win();
+    this.store.setState({ cheatUnlocked: true });
+  }
+
   start(i: number): void {
-    const locked = i > 0 && !this.s.done[ISLANDS[i - 1].id];
-    if (locked) {
+    if (this.isLocked(i)) {
       this.sounds.wrong();
       return;
     }
