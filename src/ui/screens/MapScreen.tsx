@@ -6,7 +6,7 @@ const ISLAND_PATH =
 
 export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameState }) {
   const L = STR[state.lang];
-  const stickerCount = `${state.stickers.length} / ${STICKERS.length}`;
+  const stickerCount = `${game.ownedCount()} / ${STICKERS.length}`;
 
   return (
     <div style="width:100%;max-width:720px;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1">

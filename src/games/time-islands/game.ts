@@ -30,7 +30,7 @@ export interface GameState {
   lang: Lang;
   done: Record<string, boolean>;
   stickers: string[];
-  /** Test cheat: every island playable this session (not saved). */
+  /** Test cheat: every island playable and every band member shown this session (not saved). */
   cheatUnlocked: boolean;
   screen: Screen;
   island: number | null;
@@ -269,11 +269,21 @@ export class TimeIslandsGame {
     return !this.s.cheatUnlocked && i > 0 && !this.s.done[ISLANDS[i - 1].id];
   }
 
-  /** Test cheat (typed "iddqd"): unlock every island for this session. */
+  /** Test cheat (typed "iddqd"): unlock every island and band member for this session. */
   unlockAll(): void {
     if (this.s.cheatUnlocked) return;
     this.sounds.win();
     this.store.setState({ cheatUnlocked: true });
+  }
+
+  /** Sticker ownership as displayed, honoring the test cheat (the save is untouched). */
+  ownsSticker(id: string): boolean {
+    return this.s.cheatUnlocked || this.s.stickers.includes(id);
+  }
+
+  /** Owned-sticker count as displayed, honoring the test cheat. */
+  ownedCount(): number {
+    return this.s.cheatUnlocked ? STICKERS.length : this.s.stickers.length;
   }
 
   start(i: number): void {

@@ -4,7 +4,7 @@ import { Creature } from "@ui/components/Creature.tsx";
 
 export function StickerScreen({ game, state }: { game: TimeIslandsGame; state: GameState }) {
   const L = STR[state.lang];
-  const stickerCount = `${state.stickers.length} / ${STICKERS.length}`;
+  const stickerCount = `${game.ownedCount()} / ${STICKERS.length}`;
 
   return (
     <div style="width:100%;max-width:720px;display:flex;flex-direction:column;gap:20px;padding-top:18px">
@@ -21,7 +21,7 @@ export function StickerScreen({ game, state }: { game: TimeIslandsGame; state: G
 
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px">
         {STICKERS.map((st) => {
-          const owned = state.stickers.includes(st.id);
+          const owned = game.ownsSticker(st.id);
           return (
             <div
               key={st.id}

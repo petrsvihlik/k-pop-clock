@@ -6,7 +6,7 @@ import { App } from "@ui/App.tsx";
 // One game instance owns all state; the UI is a projection of it.
 const game = new TimeIslandsGame(DEFAULT_CONFIG);
 
-// Doom-style test cheat: typing "iddqd" anywhere unlocks every island.
+// Doom-style test cheat: typing "iddqd" anywhere unlocks every island and band member.
 let typed = "";
 window.addEventListener("keydown", (e) => {
   typed = (typed + e.key.toLowerCase()).slice(-5);
