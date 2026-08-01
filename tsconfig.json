@@ -21,11 +21,10 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
 
-    "baseUrl": ".",
     "paths": {
-      "@engine/*": ["src/engine/*"],
-      "@game/*": ["src/games/time-islands/*"],
-      "@ui/*": ["src/ui/*"]
+      "@engine/*": ["./src/engine/*"],
+      "@game/*": ["./src/games/time-islands/*"],
+      "@ui/*": ["./src/ui/*"]
     }
   },
   "include": ["src"]
