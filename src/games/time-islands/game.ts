@@ -71,6 +71,9 @@ interface SaveData {
 const SAVE_KEY = "timeislands_v1";
 const CONFETTI_COLORS = ["#ff5fa2", "#4fd8e8", "#ffcf5c", "#7ee081", "#a78bfa", "#ff9d5c"];
 
+/** Extended band members, joining in this order when a replay earns nothing else. */
+const REPLAY_FRIENDS = ["tiger", "magpie", "nari", "dara", "juju", "han", "kwon", "romeo", "mini"];
+
 export class TimeIslandsGame {
   readonly store: Store<GameState>;
   readonly config: GameplayConfig;
@@ -418,6 +421,15 @@ export class TimeIslandsGame {
       const st = STICKERS.find((x) => x.id === extra)!;
       if (earned) extraName = st.name;
       else earned = st;
+    }
+
+    // Pure replay with nothing new: the extended band joins one member at a time.
+    if (!earned) {
+      const next = REPLAY_FRIENDS.find((id) => !stickers.includes(id));
+      if (next) {
+        stickers.push(next);
+        earned = STICKERS.find((x) => x.id === next) ?? null;
+      }
     }
 
     const confetti: ConfettiBit[] = Array.from({ length: 36 }, () => ({

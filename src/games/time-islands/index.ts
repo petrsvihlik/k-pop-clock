@@ -2,7 +2,7 @@
 export { TimeIslandsGame } from "./game.ts";
 export type { GameState, Screen, Feedback, ConfettiBit } from "./game.ts";
 export { ISLANDS, STICKERS, ISLAND_STICKER_IDS } from "./data.ts";
-export type { Island, Sticker, IslandType, MinuteGrain, Ears, Accessory } from "./data.ts";
+export type { Island, Sticker, IslandType, MinuteGrain, Ears, Accessory, Hair } from "./data.ts";
 export { STR, LANGS, SPEECH_LANG } from "./i18n.ts";
 export type { Lang, Strings } from "./i18n.ts";
 export { hourAngle, minuteAngle, fmt, fmt24, to24, from24, timeWords } from "./time.ts";

@@ -31,6 +31,7 @@ export const ISLANDS: readonly Island[] = [
 
 export type Ears = "cat" | "round" | "none";
 export type Accessory = "mic" | "bolt" | "band" | "star" | "none";
+export type Hair = "braid" | "bob" | "buns" | "crop" | "curtain" | "fluffy";
 
 export interface Sticker {
   id: string;
@@ -44,6 +45,43 @@ export interface Sticker {
   snake?: boolean;
   /** Derpy mismatched googly eyes + tongue. */
   derp?: boolean;
+  /** Belly color override (spirits' furry belly / creatures' badge). */
+  accent?: string;
+
+  // Human idols: setting `skin` swaps fur for a face + hair.
+  skin?: string;
+  hair?: Hair;
+  hairColor?: string;
+  /** Outfit (body) fill override; also the sleeve color for humans. */
+  outfit?: string;
+  /** Wide-brim Joseon gat hat + jeonbok collar. */
+  gat?: boolean;
+  /** Glowing demon-pattern diamonds on the cheek. */
+  marks?: boolean;
+  /** Gold textile sash across the outfit. */
+  sash?: string;
+  /** Leather jacket: lapels, zipper, utility strap. */
+  jacket?: boolean;
+  /** Hoodie drawstrings + big chest star. */
+  hoodie?: boolean;
+  /** Small heart on the chest. */
+  heart?: boolean;
+  /** Twin shinkal knives held at the sides. */
+  knives?: boolean;
+  /** Open silky collar + gold necklace. */
+  jewelry?: boolean;
+  /** Sleeveless top: bare, beefier arms. */
+  muscle?: boolean;
+  /** Flirty wink (right eye closed). */
+  wink?: boolean;
+  /** Stoic half-lidded eyes. */
+  lids?: boolean;
+
+  // Animal spirits.
+  /** Korean tiger spirit: stripes, muzzle, goofy grin, striped tail. */
+  tiger?: boolean;
+  /** Magpie spirit: dark wings, tail feathers, bird feet, sharp brows. */
+  magpie?: boolean;
 }
 
 export const STICKERS: readonly Sticker[] = [
@@ -57,6 +95,98 @@ export const STICKERS: readonly Sticker[] = [
   { id: "bonus", name: "Nota", color: "#ffe08a", ears: "none", acc: "star", bird: true },
   { id: "cat", name: "Ťulda", color: "#5eead4", ears: "cat", acc: "none", derp: true },
   { id: "snake", name: "Očko", color: "#a3e635", ears: "none", acc: "none", snake: true },
+
+  // The extended band — human idols and animal spirits, earned by replaying islands.
+  {
+    id: "nari",
+    name: "Nari",
+    color: "#8b5cf6",
+    ears: "none",
+    acc: "none",
+    skin: "#ffe3d0",
+    hair: "braid",
+    hairColor: "#7c4dff",
+    outfit: "#241a52",
+    marks: true,
+    sash: "#ffcf5c",
+  },
+  {
+    id: "dara",
+    name: "Dara",
+    color: "#8b93a7",
+    ears: "none",
+    acc: "none",
+    skin: "#ffe3d0",
+    hair: "bob",
+    hairColor: "#352454",
+    outfit: "#221c33",
+    jacket: true,
+    lids: true,
+  },
+  {
+    id: "juju",
+    name: "Juju",
+    color: "#4ade80",
+    ears: "none",
+    acc: "none",
+    skin: "#ffe3d0",
+    hair: "buns",
+    hairColor: "#2f2440",
+    outfit: "#3ecf6f",
+    hoodie: true,
+    knives: true,
+  },
+  {
+    id: "han",
+    name: "Han",
+    color: "#38bdf8",
+    ears: "none",
+    acc: "none",
+    skin: "#fff0e6",
+    hair: "crop",
+    hairColor: "#17102b",
+    outfit: "#1d2440",
+    gat: true,
+  },
+  {
+    id: "kwon",
+    name: "Kwon",
+    color: "#f97316",
+    ears: "none",
+    acc: "none",
+    skin: "#f2c9a0",
+    hair: "crop",
+    hairColor: "#2f2440",
+    outfit: "#e11d48",
+    muscle: true,
+  },
+  {
+    id: "romeo",
+    name: "Romeo",
+    color: "#e879f9",
+    ears: "none",
+    acc: "none",
+    skin: "#ffe3d0",
+    hair: "curtain",
+    hairColor: "#3b2314",
+    outfit: "#7a2b5e",
+    jewelry: true,
+    wink: true,
+  },
+  {
+    id: "mini",
+    name: "Mini",
+    color: "#f9a8d4",
+    ears: "none",
+    acc: "none",
+    skin: "#ffe9d6",
+    hair: "fluffy",
+    hairColor: "#c4b5fd",
+    outfit: "#fbcfe8",
+    heart: true,
+  },
+  { id: "tiger", name: "Tygřík", color: "#ff8a2a", ears: "round", acc: "none", tiger: true, accent: "#fff2d9" },
+  { id: "magpie", name: "Straka", color: "#2e3a6e", ears: "none", acc: "none", bird: true, magpie: true, accent: "#fff7f0" },
 ];
 
 /** Ids of stickers that correspond to a playable island (the "band members"). */
