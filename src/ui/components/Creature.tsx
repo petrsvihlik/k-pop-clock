@@ -28,6 +28,9 @@ export interface ChibiProps {
   gat?: boolean;
   marks?: boolean;
   sash?: string;
+  shirt?: string;
+  openJacket?: string;
+  shorts?: string;
   jacket?: boolean;
   hoodie?: boolean;
   heart?: boolean;
@@ -38,6 +41,9 @@ export interface ChibiProps {
   lids?: boolean;
   tiger?: boolean;
   magpie?: boolean;
+  eyeColor?: string;
+  wideEyes?: boolean;
+  topHat?: boolean;
   width?: number;
   height?: number;
 }
@@ -57,6 +63,9 @@ export function Chibi({
   gat = false,
   marks = false,
   sash,
+  shirt,
+  openJacket,
+  shorts,
   jacket = false,
   hoodie = false,
   heart = false,
@@ -67,18 +76,32 @@ export function Chibi({
   lids = false,
   tiger = false,
   magpie = false,
+  eyeColor,
+  wideEyes = false,
+  topHat = false,
   width = 104,
   height = 137,
 }: ChibiProps) {
   const human = !!skin;
   const spirit = tiger || magpie;
   const headFill = human ? skin! : c;
-  const bodyFill = outfit ?? "#2c1b57";
-  const armFill = muscle ? skin! : magpie ? "#1f2a52" : human ? bodyFill : c;
+  const bodyFill = shirt ?? outfit ?? "#2c1b57";
+  const armFill = muscle ? skin! : magpie ? "#1f2a52" : human ? (openJacket ?? bodyFill) : c;
   const feetFill = human ? (gat ? "#17102b" : CREAM) : magpie ? "#ff9d3d" : c;
   const smile = !bird && !snake && !derp && !tiger;
   // The hair sprout only fits on creatures with a free head top.
-  const ahoge = !human && acc !== "star" && acc !== "bolt" && !snake;
+  const ahoge = !human && acc !== "star" && acc !== "bolt" && !snake && !topHat;
+  // Wide eyes sit a touch higher so the muzzle/mouth keeps clear of them.
+  const eyeR = wideEyes ? 10.5 : 8;
+  const eyeCy = wideEyes ? 47 : 49;
+  const eye = (cx: number) => (
+    <g>
+      {eyeColor && <circle cx={cx} cy={eyeCy} r={eyeR} fill={eyeColor} stroke={OUTLINE} stroke-width="2.5" />}
+      <circle cx={cx} cy={eyeCy} r={eyeColor ? eyeR * 0.5 : eyeR} fill={OUTLINE} />
+      <circle cx={cx - 3} cy={eyeCy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />
+      <circle cx={cx + 3} cy={eyeCy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
+    </g>
+  );
   return (
     <svg width={width} height={height} viewBox="0 0 100 132">
       {/* ears (behind the head) */}
@@ -140,6 +163,19 @@ export function Chibi({
       {!spirit && !human && <circle cx="50" cy="99" r="11.5" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
 
       {/* outfit detailing */}
+      {shorts && (
+        <g>
+          {/* exactly the body's bottom rounded region, so nothing pokes past the silhouette */}
+          <path d="M27 100 A20 20 0 0 0 47 120 L53 120 A20 20 0 0 0 73 100 Z" fill={shorts} stroke={OUTLINE} stroke-width="2.5" />
+          <path d="M50 112 L50 119" stroke={OUTLINE} stroke-width="2" />
+        </g>
+      )}
+      {openJacket && (
+        <g>
+          <rect x="27" y="74" width="14" height="34" rx="7" fill={openJacket} stroke={OUTLINE} stroke-width="2.5" />
+          <rect x="59" y="74" width="14" height="34" rx="7" fill={openJacket} stroke={OUTLINE} stroke-width="2.5" />
+        </g>
+      )}
       {jacket && (
         <g>
           <polygon points="35,76 46,76 35,92" fill="#120d1d" />
@@ -247,6 +283,13 @@ export function Chibi({
       )}
 
       {/* accessories on the head */}
+      {topHat && (
+        <g>
+          <rect x="38" y="0.5" width="24" height="16" rx="3" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" />
+          <rect x="39" y="12" width="22" height="3.5" fill="#3b2f63" />
+          <ellipse cx="50" cy="17" rx="17" ry="4" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" />
+        </g>
+      )}
       {acc === "band" && (
         <g>
           <path d="M20 33 Q50 13 80 33" stroke={OUTLINE} stroke-width="6" fill="none" />
@@ -290,16 +333,8 @@ export function Chibi({
       {/* big glossy eyes */}
       {!derp && (
         <g>
-          <circle cx="36" cy="49" r="8" fill={OUTLINE} />
-          <circle cx="33" cy="45.5" r="3" fill="#ffffff" />
-          <circle cx="39" cy="53" r="1.6" fill="#ffffff" opacity="0.95" />
-          {!wink && (
-            <g>
-              <circle cx="64" cy="49" r="8" fill={OUTLINE} />
-              <circle cx="61" cy="45.5" r="3" fill="#ffffff" />
-              <circle cx="67" cy="53" r="1.6" fill="#ffffff" opacity="0.95" />
-            </g>
-          )}
+          {eye(36)}
+          {!wink && eye(64)}
           {wink && <path d="M58 47 Q64 52 70 47" stroke={OUTLINE} stroke-width="3" fill="none" stroke-linecap="round" />}
         </g>
       )}
@@ -400,6 +435,9 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       gat={sticker.gat}
       marks={sticker.marks}
       sash={sticker.sash}
+      shirt={sticker.shirt}
+      openJacket={sticker.openJacket}
+      shorts={sticker.shorts}
       jacket={sticker.jacket}
       hoodie={sticker.hoodie}
       heart={sticker.heart}
@@ -410,6 +448,9 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       lids={sticker.lids}
       tiger={sticker.tiger}
       magpie={sticker.magpie}
+      eyeColor={sticker.eyeColor}
+      wideEyes={sticker.wideEyes}
+      topHat={sticker.topHat}
       width={width}
       height={height}
     />

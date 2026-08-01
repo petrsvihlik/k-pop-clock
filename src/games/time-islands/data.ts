@@ -60,6 +60,12 @@ export interface Sticker {
   marks?: boolean;
   /** Gold textile sash across the outfit. */
   sash?: string;
+  /** T-shirt torso color (replaces the stage-outfit body fill). */
+  shirt?: string;
+  /** Unzipped jacket: side panels + sleeves in this color over the shirt. */
+  openJacket?: string;
+  /** Shorts covering the lower body, e.g. denim. */
+  shorts?: string;
   /** Leather jacket: lapels, zipper, utility strap. */
   jacket?: boolean;
   /** Hoodie drawstrings + big chest star. */
@@ -82,6 +88,13 @@ export interface Sticker {
   tiger?: boolean;
   /** Magpie spirit: dark wings, tail feathers, bird feet, sharp brows. */
   magpie?: boolean;
+
+  /** Iris color around the pupils (default: solid dark eyes). */
+  eyeColor?: string;
+  /** Extra-big round eyes. */
+  wideEyes?: boolean;
+  /** Black top hat (medium height). */
+  topHat?: boolean;
 }
 
 export const STICKERS: readonly Sticker[] = [
@@ -106,9 +119,10 @@ export const STICKERS: readonly Sticker[] = [
     skin: "#ffe3d0",
     hair: "braid",
     hairColor: "#7c4dff",
-    outfit: "#241a52",
+    shirt: "#ffffff",
+    openJacket: "#ffcf5c",
+    shorts: "#4a7fd4",
     marks: true,
-    sash: "#ffcf5c",
   },
   {
     id: "dara",
@@ -185,8 +199,28 @@ export const STICKERS: readonly Sticker[] = [
     outfit: "#fbcfe8",
     heart: true,
   },
-  { id: "tiger", name: "Tygřík", color: "#ff8a2a", ears: "round", acc: "none", tiger: true, accent: "#fff2d9" },
-  { id: "magpie", name: "Straka", color: "#2e3a6e", ears: "none", acc: "none", bird: true, magpie: true, accent: "#fff7f0" },
+  {
+    id: "tiger",
+    name: "Tygřík",
+    color: "#8fd3f8",
+    ears: "round",
+    acc: "none",
+    tiger: true,
+    accent: "#fff7f0",
+    eyeColor: "#ff9d3d",
+    wideEyes: true,
+  },
+  {
+    id: "magpie",
+    name: "Straka",
+    color: "#2e3a6e",
+    ears: "none",
+    acc: "none",
+    bird: true,
+    magpie: true,
+    accent: "#fff7f0",
+    topHat: true,
+  },
 ];
 
 /** Ids of stickers that correspond to a playable island (the "band members"). */
