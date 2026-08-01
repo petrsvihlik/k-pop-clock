@@ -6,6 +6,8 @@ import { GalleryScreen } from "@ui/screens/GalleryScreen.tsx";
 
 // One game instance owns all state; the UI is a projection of it.
 const game = new TimeIslandsGame(DEFAULT_CONFIG);
+// Console handle for manual testing (pairs with the iddqd cheat).
+(window as unknown as { game: TimeIslandsGame }).game = game;
 
 // Doom-style test cheat: typing "iddqd" anywhere unlocks every island and band member.
 let typed = "";

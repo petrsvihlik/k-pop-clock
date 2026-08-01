@@ -8,7 +8,7 @@
  */
 import { AudioEngine, LocalSave, Speech, Store, pick } from "@engine/index.ts";
 import { DEFAULT_CONFIG, type GameplayConfig } from "./config.ts";
-import { ISLANDS, ISLAND_STICKER_IDS, STICKERS, type Sticker } from "./data.ts";
+import { ISLANDS, STICKERS, type Sticker } from "./data.ts";
 import { SPEECH_LANG, STR, type Lang, type Strings } from "./i18n.ts";
 import { board, genQ, type Card, type Question } from "./questions.ts";
 import { from24, timeWords, type Period } from "./time.ts";
@@ -45,8 +45,6 @@ export interface GameState {
   setM: number;
   showComplete: boolean;
   earned: Sticker | null;
-  bonus: boolean;
-  extraName: string;
   confetti: ConfettiBit[];
 
   // sandbox (free-play clock)
@@ -71,8 +69,8 @@ interface SaveData {
 const SAVE_KEY = "timeislands_v1";
 const CONFETTI_COLORS = ["#ff5fa2", "#4fd8e8", "#ffcf5c", "#7ee081", "#a78bfa", "#ff9d5c"];
 
-/** Extended band members, joining in this order when a replay earns nothing else. */
-const REPLAY_FRIENDS = ["tiger", "magpie", "nari", "dara", "juju", "han", "kwon", "romeo", "mini"];
+/** Order in which band members join, one per finished level with more to give. */
+const JOIN_ORDER = ["nari", "dara", "juju", "han", "kwon", "romeo", "mini", "tiger", "magpie"];
 
 export class TimeIslandsGame {
   readonly store: Store<GameState>;
@@ -93,6 +91,8 @@ export class TimeIslandsGame {
       defaults: { lang: "cs", done: {}, stickers: [], seenIntro: false },
     });
     const saved = this.save_.load();
+    // Drop sticker ids from retired character sets so old saves stay consistent.
+    saved.stickers = saved.stickers.filter((id) => STICKERS.some((st) => st.id === id));
     const now = this.nowParts();
 
     this.store = new Store<GameState>({
@@ -114,8 +114,6 @@ export class TimeIslandsGame {
       setM: 0,
       showComplete: false,
       earned: null,
-      bonus: false,
-      extraName: "",
       confetti: [],
       sbH: now.h12,
       sbM: now.m,
@@ -302,8 +300,6 @@ export class TimeIslandsGame {
         feedbackText: "",
         showComplete: false,
         earned: null,
-        bonus: false,
-        extraName: "",
         q: g.q,
         cards: g.cards,
         sel: g.sel,
@@ -408,38 +404,13 @@ export class TimeIslandsGame {
     const isl = ISLANDS[s.island ?? 0];
     const done = { ...s.done, [isl.id]: true };
     const stickers = s.stickers.slice();
+
+    // Every finished level recruits the next band member until all have joined.
     let earned: Sticker | null = null;
-    let bonus = false;
-
-    if (!stickers.includes(isl.id)) {
-      stickers.push(isl.id);
-      earned = STICKERS.find((st) => st.id === isl.id) ?? null;
-    }
-    if (ISLANDS.every((it) => done[it.id]) && !stickers.includes("bonus")) {
-      stickers.push("bonus");
-      if (earned) bonus = true;
-      else earned = STICKERS.find((st) => st.id === "bonus") ?? null;
-    }
-
-    const memberCount = stickers.filter((id) => ISLAND_STICKER_IDS.includes(id)).length;
-    let extraName = "";
-    let extra: string | null = null;
-    if (memberCount >= 2 && !stickers.includes("cat")) extra = "cat";
-    else if (memberCount >= 5 && !stickers.includes("snake")) extra = "snake";
-    if (extra) {
-      stickers.push(extra);
-      const st = STICKERS.find((x) => x.id === extra)!;
-      if (earned) extraName = st.name;
-      else earned = st;
-    }
-
-    // Pure replay with nothing new: the extended band joins one member at a time.
-    if (!earned) {
-      const next = REPLAY_FRIENDS.find((id) => !stickers.includes(id));
-      if (next) {
-        stickers.push(next);
-        earned = STICKERS.find((x) => x.id === next) ?? null;
-      }
+    const next = JOIN_ORDER.find((id) => !stickers.includes(id));
+    if (next) {
+      stickers.push(next);
+      earned = STICKERS.find((x) => x.id === next) ?? null;
     }
 
     const confetti: ConfettiBit[] = Array.from({ length: 36 }, () => ({
@@ -453,9 +424,7 @@ export class TimeIslandsGame {
 
     this.sounds.win();
     this.speak(this.T().done);
-    this.store.setState({ done, stickers, showComplete: true, earned, bonus, extraName, confetti }, () =>
-      this.save(),
-    );
+    this.store.setState({ done, stickers, showComplete: true, earned, confetti }, () => this.save());
   }
 
   // ---------- set-hands dragging ----------

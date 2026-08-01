@@ -33,8 +33,6 @@ export interface Strings {
   hintMatch: string;
   cheer: string;
   tryAgain: string;
-  bonusNote: string;
-  friendNote: string;
   praise: string[];
   islands: Record<string, string>;
 
@@ -78,8 +76,6 @@ export const STR: Record<Lang, Strings> = {
     hintMatch: "Podívej se pozorně na obě ručičky a zkus to znovu!",
     cheer: "Ty to zvládneš!",
     tryAgain: "Zkus to znovu!",
-    bonusNote: "A bonusová samolepka za všechny ostrovy!",
-    friendNote: "A přidal se i {name}! Mrkni do kapely.",
     praise: ["Výborně!", "Paráda!", "Super!", "Skvěle ti to jde!"],
     islands: {
       whole: "Celé hodiny",
@@ -150,8 +146,6 @@ export const STR: Record<Lang, Strings> = {
     hintMatch: "Look closely at both hands and try again!",
     cheer: "You can do it!",
     tryAgain: "Try again!",
-    bonusNote: "And a bonus sticker for finishing every island!",
-    friendNote: "And {name} joined too! Check your band.",
     praise: ["Great job!", "Awesome!", "Super!", "You got it!"],
     islands: {
       whole: "Whole Hours",
@@ -222,8 +216,6 @@ export const STR: Record<Lang, Strings> = {
     hintMatch: "¡Mira bien las dos agujas e inténtalo otra vez!",
     cheer: "¡Tú puedes!",
     tryAgain: "¡Inténtalo otra vez!",
-    bonusNote: "¡Y una pegatina extra por terminar todas las islas!",
-    friendNote: "¡{name} también se ha unido! Mira tu banda.",
     praise: ["¡Muy bien!", "¡Genial!", "¡Súper!", "¡Lo lograste!"],
     islands: {
       whole: "Horas en punto",

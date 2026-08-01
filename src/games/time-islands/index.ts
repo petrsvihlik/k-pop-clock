@@ -1,7 +1,7 @@
 /** Public surface of the Time Islands game. */
 export { TimeIslandsGame } from "./game.ts";
 export type { GameState, Screen, Feedback, ConfettiBit } from "./game.ts";
-export { ISLANDS, STICKERS, ISLAND_STICKER_IDS } from "./data.ts";
+export { ISLANDS, STICKERS } from "./data.ts";
 export type { Island, Sticker, IslandType, MinuteGrain, Ears, Accessory, Hair } from "./data.ts";
 export { STR, LANGS, SPEECH_LANG } from "./i18n.ts";
 export type { Lang, Strings } from "./i18n.ts";

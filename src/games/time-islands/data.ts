@@ -95,21 +95,14 @@ export interface Sticker {
   wideEyes?: boolean;
   /** Black top hat (medium height). */
   topHat?: boolean;
+  /** Three small eyes stacked vertically down the face center. */
+  tripleEyes?: boolean;
+  /** Beak fill for birds (default orange). */
+  beakColor?: string;
 }
 
 export const STICKERS: readonly Sticker[] = [
-  { id: "whole", name: "Tiki", color: "#4fd8e8", ears: "cat", acc: "mic" },
-  { id: "half", name: "Ruby", color: "#ff5fa2", ears: "cat", acc: "bolt" },
-  { id: "five", name: "Bubu", color: "#ffcf5c", ears: "round", acc: "band" },
-  { id: "dig24", name: "Mimi", color: "#a78bfa", ears: "cat", acc: "band" },
-  { id: "any", name: "Zizi", color: "#7ee081", ears: "round", acc: "mic" },
-  { id: "match", name: "Fofo", color: "#ff9d5c", ears: "none", acc: "bolt" },
-  { id: "set", name: "Pipa", color: "#5ca8ff", ears: "none", acc: "star" },
-  { id: "bonus", name: "Nota", color: "#ffe08a", ears: "none", acc: "star", bird: true },
-  { id: "cat", name: "Ťulda", color: "#5eead4", ears: "cat", acc: "none", derp: true },
-  { id: "snake", name: "Očko", color: "#a3e635", ears: "none", acc: "none", snake: true },
-
-  // The extended band — human idols and animal spirits, earned by replaying islands.
+  // The band — human idols and animal spirits, joining one by one as levels are finished.
   {
     id: "nari",
     name: "Nari",
@@ -220,8 +213,8 @@ export const STICKERS: readonly Sticker[] = [
     magpie: true,
     accent: "#fff7f0",
     topHat: true,
+    tripleEyes: true,
+    eyeColor: "#ffcf5c",
+    beakColor: "#17102b",
   },
 ];
-
-/** Ids of stickers that correspond to a playable island (the "band members"). */
-export const ISLAND_STICKER_IDS: readonly string[] = ISLANDS.map((i) => i.id);

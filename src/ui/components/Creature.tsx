@@ -44,6 +44,8 @@ export interface ChibiProps {
   eyeColor?: string;
   wideEyes?: boolean;
   topHat?: boolean;
+  tripleEyes?: boolean;
+  beakColor?: string;
   width?: number;
   height?: number;
 }
@@ -79,6 +81,8 @@ export function Chibi({
   eyeColor,
   wideEyes = false,
   topHat = false,
+  tripleEyes = false,
+  beakColor = "#ff9d5c",
   width = 104,
   height = 137,
 }: ChibiProps) {
@@ -96,7 +100,7 @@ export function Chibi({
   const eyeCy = wideEyes ? 47 : 49;
   const eye = (cx: number) => (
     <g>
-      {eyeColor && <circle cx={cx} cy={eyeCy} r={eyeR} fill={eyeColor} stroke={OUTLINE} stroke-width="2.5" />}
+      {eyeColor && <circle cx={cx} cy={eyeCy} r={eyeR} fill={eyeColor} />}
       <circle cx={cx} cy={eyeCy} r={eyeColor ? eyeR * 0.5 : eyeR} fill={OUTLINE} />
       <circle cx={cx - 3} cy={eyeCy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />
       <circle cx={cx + 3} cy={eyeCy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
@@ -331,11 +335,22 @@ export function Chibi({
       )}
 
       {/* big glossy eyes */}
-      {!derp && (
+      {!derp && !tripleEyes && (
         <g>
           {eye(36)}
           {!wink && eye(64)}
           {wink && <path d="M58 47 Q64 52 70 47" stroke={OUTLINE} stroke-width="3" fill="none" stroke-linecap="round" />}
+        </g>
+      )}
+      {tripleEyes && (
+        <g>
+          {[27, 37.5, 48].map((cy) => (
+            <g key={cy}>
+              <circle cx="50" cy={cy} r="4.5" fill={eyeColor ?? CREAM} stroke={OUTLINE} stroke-width="2" />
+              <circle cx="50" cy={cy} r="2.2" fill={OUTLINE} />
+              <circle cx="48.7" cy={cy - 1.4} r="0.9" fill="#ffffff" />
+            </g>
+          ))}
         </g>
       )}
       {lids && (
@@ -361,9 +376,6 @@ export function Chibi({
           <circle cx="48.8" cy="28" r="1" fill="#ffffff" />
         </g>
       )}
-      {magpie && (
-        <path d="M28 39 L42 43 M72 39 L58 43" stroke={OUTLINE} stroke-width="2.5" stroke-linecap="round" />
-      )}
       {marks && (
         <g fill="#6ee7ff" opacity="0.9">
           <polygon points="21,47 24,50 21,53 18,50" />
@@ -377,7 +389,7 @@ export function Chibi({
 
       {/* mouth variants */}
       {smile && <path d="M44 59 Q50 66.5 56 59" stroke={OUTLINE} stroke-width="3" fill="none" stroke-linecap="round" />}
-      {bird && <polygon points="44,54 56,54 50,63" fill="#ff9d5c" stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />}
+      {bird && <polygon points="44,54 56,54 50,63" fill={beakColor} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />}
       {tiger && (
         <g>
           <ellipse cx="50" cy="59" rx="13" ry="9.5" fill={CREAM} stroke={OUTLINE} stroke-width="2.5" />
@@ -451,6 +463,8 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       eyeColor={sticker.eyeColor}
       wideEyes={sticker.wideEyes}
       topHat={sticker.topHat}
+      tripleEyes={sticker.tripleEyes}
+      beakColor={sticker.beakColor}
       width={width}
       height={height}
     />

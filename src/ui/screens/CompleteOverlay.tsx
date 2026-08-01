@@ -6,11 +6,6 @@ export function CompleteOverlay({ game, state }: { game: TimeIslandsGame; state:
   const L = STR[state.lang];
   const earned = state.earned;
   const completeSub = earned ? L.earned : L.replayDone;
-  const bonusText = state.bonus
-    ? L.bonusNote
-    : state.extraName
-      ? L.friendNote.split("{name}").join(state.extraName)
-      : "";
 
   return (
     <div style="position:fixed;inset:0;background:rgba(18,10,46,0.82);display:flex;align-items:center;justify-content:center;z-index:50">
@@ -31,8 +26,6 @@ export function CompleteOverlay({ game, state }: { game: TimeIslandsGame; state:
           </div>
         )}
         {earned && <div style="font-size:26px;font-weight:800">{earned.name}</div>}
-
-        <div style="font-size:17px;font-weight:700;color:#6b5aa0">{bonusText}</div>
 
         <div style="display:flex;gap:14px;margin-top:8px">
           <button
