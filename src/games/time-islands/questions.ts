@@ -30,6 +30,8 @@ export interface Question {
   spoken: string;
   digital?: string;
   options?: Option[];
+  /** Tint hour/minute digits of option labels with the hand colors. */
+  colorCues?: boolean;
 }
 
 export interface Card {
@@ -114,6 +116,7 @@ export function genQ(index: number, L: Strings, lang: Lang, handSnap: HandSnap):
       prompt: L.whatTime,
       spoken: L.whatTime,
       options: shuffle(opts).map((o) => ({ label: fmt(o.h, o.m), correct: o.correct })),
+      colorCues: isl.colorCues,
     };
   } else if (isl.type === "dig24") {
     const h24 = Math.random() < 0.75 ? 13 + R(11) : 7 + R(6);

@@ -4,10 +4,22 @@ import type { TimeIslandsGame } from "@game/index.ts";
 import {
   ClockFace,
   FULL_NUMERALS,
+  HOUR_COLOR,
+  MINUTE_COLOR,
   QUARTER_NUMERALS_DIG24,
   QUARTER_NUMERALS_MATCH,
 } from "@ui/components/ClockFace.tsx";
 import { Mascot } from "@ui/components/Mascot.tsx";
+
+/** "3:20" with the hour tinted like the hour hand and the minutes like the minute hand. */
+function CueLabel({ label }: { label: string }) {
+  const [h, m] = label.split(":");
+  return (
+    <>
+      <span style={`color:${HOUR_COLOR}`}>{h}</span>:<span style={`color:${MINUTE_COLOR}`}>{m}</span>
+    </>
+  );
+}
 
 export function LevelScreen({ game, state }: { game: TimeIslandsGame; state: GameState }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -72,7 +84,7 @@ export function LevelScreen({ game, state }: { game: TimeIslandsGame; state: Gam
                 class="press-4"
                 style="min-width:140px;padding:16px 22px;font-size:36px;font-weight:800;background:#fff7f0;color:#2a1a4a;border:4px solid #2a1a4a;border-radius:22px;box-shadow:0 6px 0 #120a2e;cursor:pointer"
               >
-                {opt.label}
+                {q.colorCues && opt.label ? <CueLabel label={opt.label} /> : opt.label}
               </button>
             ))}
           </div>

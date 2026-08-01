@@ -15,12 +15,14 @@ export interface Island {
   type: IslandType;
   /** Minute granularity for "read" islands. */
   minutes?: MinuteGrain;
+  /** Tint hour/minute digits of time labels with the hand colors (early levels). */
+  colorCues?: boolean;
 }
 
 export const ISLANDS: readonly Island[] = [
-  { id: "whole", color: "#ff5fa2", type: "read", minutes: "whole" },
-  { id: "half", color: "#4fd8e8", type: "read", minutes: "quarter" },
-  { id: "five", color: "#ffcf5c", type: "read", minutes: "five" },
+  { id: "whole", color: "#ff5fa2", type: "read", minutes: "whole", colorCues: true },
+  { id: "half", color: "#4fd8e8", type: "read", minutes: "quarter", colorCues: true },
+  { id: "five", color: "#ffcf5c", type: "read", minutes: "five", colorCues: true },
   { id: "dig24", color: "#a78bfa", type: "dig24" },
   { id: "any", color: "#7ee081", type: "read", minutes: "any" },
   { id: "match", color: "#ff9d5c", type: "match" },

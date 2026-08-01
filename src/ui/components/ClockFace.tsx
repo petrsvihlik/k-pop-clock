@@ -1,5 +1,9 @@
 import type { Ref } from "preact";
 
+/** Hand colors — also used to tint the digits of time labels in early levels. */
+export const HOUR_COLOR = "#ff5fa2";
+export const MINUTE_COLOR = "#4fd8e8";
+
 /** A numeral to draw on the dial: [label, x, y] in the 0–200 viewBox. */
 export type Numeral = [string, number, number];
 
@@ -126,13 +130,13 @@ export function ClockFace({
       ))}
 
       <g transform={`rotate(${hourAngle} 100 100)`} class={pulseHand === "hour" ? "pulse" : undefined}>
-        <line x1="100" y1="108" x2="100" y2="58" stroke="#ff5fa2" stroke-width={hourWidth} stroke-linecap="round" />
-        {knobs && <circle cx="100" cy="58" r="11" fill="#ff5fa2" stroke="#2a1a4a" stroke-width="3" />}
+        <line x1="100" y1="108" x2="100" y2="58" stroke={HOUR_COLOR} stroke-width={hourWidth} stroke-linecap="round" />
+        {knobs && <circle cx="100" cy="58" r="11" fill={HOUR_COLOR} stroke="#2a1a4a" stroke-width="3" />}
       </g>
       {showMinute && (
         <g transform={`rotate(${minAngle} 100 100)`} class={pulseHand === "minute" ? "pulse" : undefined}>
-          <line x1="100" y1="110" x2="100" y2="32" stroke="#4fd8e8" stroke-width={minWidth} stroke-linecap="round" />
-          {knobs && <circle cx="100" cy="32" r="10" fill="#4fd8e8" stroke="#2a1a4a" stroke-width="3" />}
+          <line x1="100" y1="110" x2="100" y2="32" stroke={MINUTE_COLOR} stroke-width={minWidth} stroke-linecap="round" />
+          {knobs && <circle cx="100" cy="32" r="10" fill={MINUTE_COLOR} stroke="#2a1a4a" stroke-width="3" />}
         </g>
       )}
       <circle cx="100" cy="100" r={centerR} fill="#2a1a4a" />
