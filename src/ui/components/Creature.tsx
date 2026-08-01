@@ -31,6 +31,8 @@ export interface ChibiProps {
   shirt?: string;
   openJacket?: string;
   shorts?: string;
+  shortsTrim?: string;
+  cropTop?: string;
   jacket?: boolean;
   hoodie?: boolean;
   heart?: boolean;
@@ -68,6 +70,8 @@ export function Chibi({
   shirt,
   openJacket,
   shorts,
+  shortsTrim,
+  cropTop,
   jacket = false,
   hoodie = false,
   heart = false,
@@ -89,7 +93,8 @@ export function Chibi({
   const human = !!skin;
   const spirit = tiger || magpie;
   const headFill = human ? skin! : c;
-  const bodyFill = shirt ?? outfit ?? "#2c1b57";
+  // A crop top bares the midriff: the body itself renders in skin tone.
+  const bodyFill = cropTop ? skin! : (shirt ?? outfit ?? "#2c1b57");
   const armFill = muscle ? skin! : magpie ? "#1f2a52" : human ? (openJacket ?? bodyFill) : c;
   const feetFill = human ? (gat ? "#17102b" : CREAM) : magpie ? "#ff9d3d" : c;
   const smile = !bird && !snake && !derp && !tiger;
@@ -172,7 +177,13 @@ export function Chibi({
           {/* exactly the body's bottom rounded region, so nothing pokes past the silhouette */}
           <path d="M27 100 A20 20 0 0 0 47 120 L53 120 A20 20 0 0 0 73 100 Z" fill={shorts} stroke={OUTLINE} stroke-width="2.5" />
           <path d="M50 112 L50 119" stroke={OUTLINE} stroke-width="2" />
+          {shortsTrim && (
+            <path d="M33 102 L38 116 M67 102 L62 116" stroke={shortsTrim} stroke-width="2.5" stroke-linecap="round" />
+          )}
         </g>
+      )}
+      {cropTop && (
+        <path d="M27 94 A20 20 0 0 1 47 74 L53 74 A20 20 0 0 1 73 94 Z" fill={cropTop} stroke={OUTLINE} stroke-width="2.5" />
       )}
       {openJacket && (
         <g>
@@ -450,6 +461,8 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       shirt={sticker.shirt}
       openJacket={sticker.openJacket}
       shorts={sticker.shorts}
+      shortsTrim={sticker.shortsTrim}
+      cropTop={sticker.cropTop}
       jacket={sticker.jacket}
       hoodie={sticker.hoodie}
       heart={sticker.heart}

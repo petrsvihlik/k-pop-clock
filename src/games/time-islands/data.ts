@@ -64,8 +64,12 @@ export interface Sticker {
   shirt?: string;
   /** Unzipped jacket: side panels + sleeves in this color over the shirt. */
   openJacket?: string;
-  /** Shorts covering the lower body, e.g. denim. */
+  /** Shorts/sweatpants covering the lower body. */
   shorts?: string;
+  /** Side-stripe color on the shorts. */
+  shortsTrim?: string;
+  /** Crop top over a bare midriff (body renders in skin tone). */
+  cropTop?: string;
   /** Leather jacket: lapels, zipper, utility strap. */
   jacket?: boolean;
   /** Hoodie drawstrings + big chest star. */
@@ -158,13 +162,15 @@ export const STICKERS: readonly Sticker[] = [
   {
     id: "kwon",
     name: "Kwon",
-    color: "#f97316",
+    color: "#8b5cf6",
     ears: "none",
     acc: "none",
     skin: "#f2c9a0",
     hair: "crop",
-    hairColor: "#2f2440",
-    outfit: "#e11d48",
+    hairColor: "#7c3aed",
+    cropTop: "#38bdf8",
+    shorts: "#8b5cf6",
+    shortsTrim: "#ffcf5c",
     muscle: true,
   },
   {
