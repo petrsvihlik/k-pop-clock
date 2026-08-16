@@ -116,8 +116,8 @@ export interface Sticker {
 export const STICKERS: readonly Sticker[] = [
   // The band — human idols and animal spirits, joining one by one as levels are finished.
   {
-    id: "nari",
-    name: "Nari",
+    id: "rumi",
+    name: "Rumi",
     color: "#8b5cf6",
     ears: "none",
     acc: "none",
@@ -130,8 +130,8 @@ export const STICKERS: readonly Sticker[] = [
     marks: true,
   },
   {
-    id: "dara",
-    name: "Dara",
+    id: "mira",
+    name: "Mira",
     color: "#8b93a7",
     ears: "none",
     acc: "none",
@@ -143,6 +143,20 @@ export const STICKERS: readonly Sticker[] = [
     boots: "#17102b",
     gokdo: true,
     lids: true,
+  },
+  {
+    id: "zoey",
+    name: "Zoey",
+    color: "#8b5cf6",
+    ears: "none",
+    acc: "none",
+    skin: "#f2c9a0",
+    hair: "braidBuns",
+    hairColor: "#1c1230",
+    cropTop: "#38bdf8",
+    shorts: "#8b5cf6",
+    shortsTrim: "#ffcf5c",
+    slim: true,
   },
   {
     id: "juju",
@@ -168,20 +182,6 @@ export const STICKERS: readonly Sticker[] = [
     hairColor: "#17102b",
     outfit: "#1d2440",
     gat: true,
-  },
-  {
-    id: "kwon",
-    name: "Kwon",
-    color: "#8b5cf6",
-    ears: "none",
-    acc: "none",
-    skin: "#f2c9a0",
-    hair: "braidBuns",
-    hairColor: "#1c1230",
-    cropTop: "#38bdf8",
-    shorts: "#8b5cf6",
-    shortsTrim: "#ffcf5c",
-    slim: true,
   },
   {
     id: "romeo",
