@@ -27,7 +27,10 @@ export interface ChibiProps {
   hairColor?: string;
   outfit?: string;
   gat?: boolean;
-  marks?: boolean;
+  marks?: string;
+  marksGlow?: string;
+  robe?: string;
+  slitPupils?: boolean;
   sash?: string;
   shirt?: string;
   openJacket?: string;
@@ -79,7 +82,10 @@ export function Chibi({
   hairColor = "#2f2440",
   outfit,
   gat = false,
-  marks = false,
+  marks,
+  marksGlow,
+  robe,
+  slitPupils = false,
   sash,
   shirt,
   openJacket,
@@ -122,7 +128,10 @@ export function Chibi({
   // A crop top bares the midriff: the body itself renders in skin tone.
   const bodyFill = cropTop ? skin! : (shirt ?? outfit ?? "#2c1b57");
   const armFill = muscle ? skin! : human ? (openJacket ?? bodyFill) : c;
-  const feetFill = human ? (gat ? "#17102b" : CREAM) : c;
+  const feetFill = human ? (gat ? "#111113" : CREAM) : c;
+  // Arcane trim on the robe borrows the skin markings' colors.
+  const arcane = marks ?? "#c9d1e0";
+  const arcaneGlow = marksGlow ?? "#4b2e83";
   const smile = !bird && !snake && !derp && !tiger;
   // The hair sprout only fits on creatures with a free head top.
   const ahoge = !human && acc !== "star" && acc !== "bolt" && !snake && !topHat;
@@ -160,8 +169,12 @@ export function Chibi({
             fill="none"
           />
         )}
-        <circle cx={cx} cy={eyeCy} r={pupilR} fill={OUTLINE} />
-        {!hypnoEyes && <circle cx={cx - 3} cy={eyeCy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />}
+        {slitPupils ? (
+          <ellipse cx={cx} cy={eyeCy} rx="1.6" ry={eyeR * 0.72} fill={OUTLINE} />
+        ) : (
+          <circle cx={cx} cy={eyeCy} r={pupilR} fill={OUTLINE} />
+        )}
+        {!hypnoEyes && !slitPupils && <circle cx={cx - 3} cy={eyeCy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />}
         <circle cx={cx + 3} cy={eyeCy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
       </g>
     );
@@ -230,6 +243,32 @@ export function Chibi({
 
       {/* chubby body + stubby arms (bigger and bare when muscle) */}
       <rect x={bx} y="74" width={bw} height="46" rx={br} fill={bodyFill} stroke={OUTLINE} stroke-width="3.5" />
+      {robe && (
+        <g>
+          {/* two flared panels with tattered hems, parting at the front; sleeves (arms) go on over them */}
+          <path d="M27 76 L21 116 L25 121 L29 116 L33 122 L38 117 L44 76 Z" fill={robe} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+          <path d="M73 76 L79 116 L75 121 L71 116 L67 122 L62 117 L56 76 Z" fill={robe} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+          {/* charcoal jeogori in the opening, with crossed straps, two chains and a pendant */}
+          <path d="M44 76 L41 100 L59 100 L56 76 Z" fill="#1c1c21" stroke={OUTLINE} stroke-width="2" stroke-linejoin="round" />
+          <path d="M45 77 L58 99 M55 77 L42 99" stroke="#111113" stroke-width="2.4" stroke-linecap="round" />
+          <path d="M43 78 Q50 89 57 78 M42 82 Q50 96 58 82" stroke={OUTLINE} stroke-width="2.6" fill="none" stroke-linecap="round" />
+          <path d="M43 78 Q50 89 57 78 M42 82 Q50 96 58 82" stroke="#c9d1e0" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-dasharray="1.6 1.2" />
+          <circle cx="50" cy="90.5" r="3.8" fill={arcaneGlow} opacity="0.55" />
+          <path d="M50 87 L52.8 90.5 L50 94 L47.2 90.5 Z" fill={arcane} stroke={OUTLINE} stroke-width="1" stroke-linejoin="round" />
+          {/* thigh chain on the trousers */}
+          <path d="M50 105 Q55 111 60 106" stroke={OUTLINE} stroke-width="2.4" fill="none" stroke-linecap="round" />
+          <path d="M50 105 Q55 111 60 106" stroke="#c9d1e0" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-dasharray="1.4 1.1" />
+          {/* arcane trim along the hems */}
+          <g fill={arcaneGlow} opacity="0.5">
+            <circle cx="24" cy="116" r="2.6" /><circle cx="31" cy="118" r="2.6" /><circle cx="37" cy="116" r="2.6" />
+            <circle cx="76" cy="116" r="2.6" /><circle cx="69" cy="118" r="2.6" /><circle cx="63" cy="116" r="2.6" />
+          </g>
+          <g fill={arcane}>
+            <path d="M24 114.5 L25.5 116 L24 117.5 L22.5 116 Z M31 116.5 L32.5 118 L31 119.5 L29.5 118 Z M37 114.5 L38.5 116 L37 117.5 L35.5 116 Z" />
+            <path d="M76 114.5 L77.5 116 L76 117.5 L74.5 116 Z M69 116.5 L70.5 118 L69 119.5 L67.5 118 Z M63 114.5 L64.5 116 L63 117.5 L61.5 116 Z" />
+          </g>
+        </g>
+      )}
       <ellipse
         cx={50 - armDx}
         cy="90"
@@ -391,7 +430,14 @@ export function Chibi({
           stroke-width="1.8"
         />
       )}
-      {gat && <path d="M34 76 L50 92 M66 76 L50 92" stroke={CREAM} stroke-width="4" stroke-linecap="round" />}
+      {robe && (
+        <g>
+          {/* arcane sigils on the cuffs, at the sleeve tips */}
+          <circle cx="25.4" cy="101" r="3.2" fill={arcaneGlow} opacity="0.55" />
+          <circle cx="74.6" cy="101" r="3.2" fill={arcaneGlow} opacity="0.55" />
+          <path d="M25.4 98.8 L27.4 101 L25.4 103.2 L23.4 101 Z M74.6 98.8 L76.6 101 L74.6 103.2 L72.6 101 Z" fill={arcane} stroke={OUTLINE} stroke-width="0.8" stroke-linejoin="round" />
+        </g>
+      )}
       {sash && <rect x="30" y="108" width="40" height="5" rx="2.5" fill={sash} stroke={OUTLINE} stroke-width="2" />}
 
       {/* head overlapping the body — the no-neck chibi merge */}
@@ -486,12 +532,12 @@ export function Chibi({
         </g>
       )}
 
-      {/* gat hat over the hair */}
+      {/* gat hat over the hair: tall semi-transparent horsehair crown, wide flat brim, chin straps */}
       {gat && (
         <g>
-          <path d="M24 20 Q28 44 42 60 M76 20 Q72 44 58 60" stroke="#17102b" stroke-width="1.8" fill="none" opacity="0.7" />
-          <rect x="39" y="3" width="22" height="17" rx="5" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" />
-          <ellipse cx="50" cy="18" rx="29" ry="5.5" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" opacity="0.95" />
+          <path d="M24 24 Q28 46 42 60 M76 24 Q72 46 58 60" stroke="#111113" stroke-width="1.8" fill="none" opacity="0.7" />
+          <rect x="38" y="1" width="24" height="22" rx="4" fill="#111113" opacity="0.8" stroke={OUTLINE} stroke-width="2.5" />
+          <ellipse cx="50" cy="22" rx="35" ry="5" fill="#111113" stroke={OUTLINE} stroke-width="2.5" />
         </g>
       )}
 
@@ -595,9 +641,27 @@ export function Chibi({
         </g>
       )}
       {marks && (
-        <g fill="#6ee7ff" opacity="0.9">
-          <polygon points="21,47 24,50 21,53 18,50" />
-          <polygon points="26,55 28,57 26,59 24,57" />
+        <g>
+          {marksGlow && (
+            <g fill={marksGlow} opacity="0.5">
+              <circle cx="21" cy="50" r="4.5" />
+              <circle cx="26" cy="57" r="3.5" />
+              <circle cx="79" cy="50" r="4.5" />
+              <circle cx="74" cy="57" r="3.5" />
+              <circle cx="50" cy="40" r="4.5" />
+            </g>
+          )}
+          <g fill={marks} opacity="0.9">
+            <polygon points="21,47 24,50 21,53 18,50" />
+            <polygon points="26,55 28,57 26,59 24,57" />
+            {marksGlow && (
+              <g>
+                <polygon points="79,47 82,50 79,53 76,50" />
+                <polygon points="74,55 76,57 74,59 72,57" />
+                <polygon points="50,36.5 52.5,40 50,43.5 47.5,40" />
+              </g>
+            )}
+          </g>
         </g>
       )}
 
@@ -744,6 +808,9 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       outfit={sticker.outfit}
       gat={sticker.gat}
       marks={sticker.marks}
+      marksGlow={sticker.marksGlow}
+      robe={sticker.robe}
+      slitPupils={sticker.slitPupils}
       sash={sticker.sash}
       shirt={sticker.shirt}
       openJacket={sticker.openJacket}

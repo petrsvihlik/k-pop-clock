@@ -55,10 +55,20 @@ export interface Sticker {
   hairColor?: string;
   /** Outfit (body) fill override; also the sleeve color for humans. */
   outfit?: string;
-  /** Wide-brim Joseon gat hat + jeonbok collar. */
+  /** Wide-brim Joseon gat hat: tall semi-transparent crown, flat brim, chin straps. */
   gat?: boolean;
-  /** Glowing demon-pattern diamonds on the cheek. */
-  marks?: boolean;
+  /** Glowing arcane diamonds on the left cheek, in this color. */
+  marks?: string;
+  /** Halo color for the marks; when set they also appear on the right cheek and brow. */
+  marksGlow?: string;
+  /**
+   * Tattered traditional overcoat in this color, worn open over a charcoal
+   * jeogori with chest chains, a pendant, and crossed straps; the trousers get
+   * a thigh chain. Arcane trim on cuffs and hem uses the marks colors.
+   */
+  robe?: string;
+  /** Vertical slit pupils (pair with `sclera` for glowing demon eyes). */
+  slitPupils?: boolean;
   /** Gold textile sash across the outfit. */
   sash?: string;
   /** T-shirt torso color (replaces the stage-outfit body fill). */
@@ -149,7 +159,7 @@ export const STICKERS: readonly Sticker[] = [
     openJacket: "#ffcf5c",
     shorts: "#4a7fd4",
     necklace: "#8b6fc9",
-    marks: true,
+    marks: "#6ee7ff",
   },
   {
     id: "mira",
@@ -213,14 +223,19 @@ export const STICKERS: readonly Sticker[] = [
   {
     id: "jinu",
     name: "Jinu",
-    color: "#38bdf8",
+    color: "#9a84b3",
     ears: "none",
     acc: "none",
-    skin: "#fff0e6",
+    skin: "#9a84b3",
     hair: "crop",
-    hairColor: "#17102b",
-    outfit: "#1d2440",
+    hairColor: "#111113",
+    outfit: "#111113",
     gat: true,
+    robe: "#111113",
+    marks: "#d62868",
+    marksGlow: "#4b2e83",
+    sclera: "#f3c63f",
+    slitPupils: true,
   },
   {
     id: "saja",
