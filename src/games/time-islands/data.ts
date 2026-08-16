@@ -107,6 +107,11 @@ export interface Sticker {
   heart?: boolean;
   /** Twin shinkal knives held at the sides. */
   knives?: boolean;
+  /**
+   * Six ritual shin-kal throwing daggers fanned three per hand: silver blades,
+   * yellow handles, teal tassels and turtle charms, in a pink spirit aura.
+   */
+  shinkal?: boolean;
   /** Open silky collar + gold necklace. */
   jewelry?: boolean;
   /** Sleeveless top: bare, beefier arms. */
@@ -189,6 +194,7 @@ export const STICKERS: readonly Sticker[] = [
     shorts: "#8b5cf6",
     shortsTrim: "#ffcf5c",
     slim: true,
+    shinkal: true,
   },
   {
     id: "derpy",

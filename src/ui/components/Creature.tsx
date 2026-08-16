@@ -50,6 +50,7 @@ export interface ChibiProps {
   hoodie?: boolean;
   heart?: boolean;
   knives?: boolean;
+  shinkal?: boolean;
   jewelry?: boolean;
   muscle?: boolean;
   slim?: boolean;
@@ -105,6 +106,7 @@ export function Chibi({
   hoodie = false,
   heart = false,
   knives = false,
+  shinkal = false,
   jewelry = false,
   muscle = false,
   slim = false,
@@ -144,6 +146,22 @@ export function Chibi({
   const br = slim ? 17 : 20;
   const armDx = bw / 2 + 5;
   const footDx = slim ? 10 : 11;
+  // Where the fists sit (the lower tip of each tilted arm), for hand-held gear.
+  const fistL: [number, number] = [50 - armDx + 3.4, 100.5];
+  const fistR: [number, number] = [50 + armDx - 3.4, 100.5];
+  // A shin-kal pointing up from its grip at the origin: silver blade, yellow
+  // guard and handle, teal turtle charm and tassel at the pommel.
+  const dagger = (x: number, y: number, deg: number, key: string) => (
+    <g key={key} transform={`translate(${x} ${y}) rotate(${deg})`}>
+      <polygon points="-2.2,-3 0,-19 2.2,-3" fill="#c0c0c0" stroke={OUTLINE} stroke-width="1.4" stroke-linejoin="round" />
+      <path d="M0 -16 L0 -5" stroke="#ffffff" stroke-width="0.8" opacity="0.7" />
+      <rect x="-3.2" y="-4" width="6.4" height="1.8" rx="0.6" fill="#ffd700" stroke={OUTLINE} stroke-width="1" />
+      <rect x="-1.7" y="-2.4" width="3.4" height="8" rx="1" fill="#ffd700" stroke={OUTLINE} stroke-width="1.2" />
+      <circle cx="0" cy="8.2" r="1.7" fill="#008080" stroke={OUTLINE} stroke-width="0.9" />
+      <circle cx="0" cy="8" r="0.7" fill="#5fd3c8" />
+      <path d="M0 9.8 L-1.6 13.5 M0 9.8 L0 14 M0 9.8 L1.6 13.5" stroke="#008080" stroke-width="1.1" stroke-linecap="round" />
+    </g>
+  );
   // Wide eyes sit a touch higher so the muzzle/mouth keeps clear of them.
   const eyeR = wideEyes ? 10.5 : 8;
   const eyeCy = wideEyes ? 47 : 49;
@@ -704,6 +722,15 @@ export function Chibi({
           <rect x="82" y="108" width="4" height="7" rx="1.5" fill={OUTLINE} />
         </g>
       )}
+      {shinkal && (
+        <g>
+          {/* pink spirit aura around each fist, then three daggers fanned outward per hand */}
+          <circle cx={fistL[0]} cy={fistL[1] - 4} r="15" fill="#ff69b4" opacity="0.22" />
+          <circle cx={fistR[0]} cy={fistR[1] - 4} r="15" fill="#ff69b4" opacity="0.22" />
+          {[-55, -35, -15].map((deg) => dagger(fistL[0], fistL[1], deg, `sl${deg}`))}
+          {[15, 35, 55].map((deg) => dagger(fistR[0], fistR[1], deg, `sr${deg}`))}
+        </g>
+      )}
       {gokdo && (
         <g>
           {/* wooden shaft past the right arm, gold ferrule, curved single-edged blade */}
@@ -830,6 +857,7 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       hoodie={sticker.hoodie}
       heart={sticker.heart}
       knives={sticker.knives}
+      shinkal={sticker.shinkal}
       jewelry={sticker.jewelry}
       muscle={sticker.muscle}
       slim={sticker.slim}
