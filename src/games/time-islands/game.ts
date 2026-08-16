@@ -30,6 +30,8 @@ export interface GameState {
   lang: Lang;
   done: Record<string, boolean>;
   stickers: string[];
+  /** Sticker id of the band member guiding the levels and the tutorial. */
+  guide: string;
   /** Test cheat: every island playable and every band member shown this session (not saved). */
   cheatUnlocked: boolean;
   screen: Screen;
@@ -63,8 +65,12 @@ interface SaveData {
   lang: Lang;
   done: Record<string, boolean>;
   stickers: string[];
+  guide: string;
   seenIntro: boolean;
 }
+
+/** The guide before any band member has joined (and the fallback if one retires). */
+const DEFAULT_GUIDE = "derpy";
 
 const SAVE_KEY = "timeislands_v1";
 const CONFETTI_COLORS = ["#ff5fa2", "#4fd8e8", "#ffcf5c", "#7ee081", "#a78bfa", "#ff9d5c"];
@@ -99,19 +105,22 @@ export class TimeIslandsGame {
     this.speech = new Speech(config.voiceOn);
     this.save_ = new LocalSave<SaveData>({
       key: SAVE_KEY,
-      defaults: { lang: "cs", done: {}, stickers: [], seenIntro: false },
+      defaults: { lang: "cs", done: {}, stickers: [], guide: DEFAULT_GUIDE, seenIntro: false },
     });
     const saved = this.save_.load();
     // Migrate renamed ids, then drop ids from retired character sets so old saves stay consistent.
     saved.stickers = saved.stickers
       .map((id) => RENAMED_IDS[id] ?? id)
       .filter((id, i, all) => all.indexOf(id) === i && STICKERS.some((st) => st.id === id));
+    const savedGuide = RENAMED_IDS[saved.guide] ?? saved.guide;
+    const guide = STICKERS.some((st) => st.id === savedGuide) ? savedGuide : DEFAULT_GUIDE;
     const now = this.nowParts();
 
     this.store = new Store<GameState>({
       lang: saved.lang,
       done: saved.done,
       stickers: saved.stickers,
+      guide,
       cheatUnlocked: false,
       // First-time visitors land in the guided tutorial.
       screen: saved.seenIntro ? "map" : "intro",
@@ -157,8 +166,24 @@ export class TimeIslandsGame {
       lang: this.s.lang,
       done: this.s.done,
       stickers: this.s.stickers,
+      guide: this.s.guide,
       seenIntro: this.s.seenIntro,
     });
+  }
+
+  /** The band member currently guiding the game (Derpy until one is chosen). */
+  guideSticker(): Sticker {
+    const st = STICKERS.find((x) => x.id === this.s.guide);
+    return st ?? STICKERS.find((x) => x.id === DEFAULT_GUIDE) ?? STICKERS[0]!;
+  }
+
+  /** Pick a joined band member as the guide; ignored for members not yet earned. */
+  setGuide(id: string): void {
+    if (!this.ownsSticker(id) || this.s.guide === id) return;
+    this.sounds.correct();
+    this.store.setState({ guide: id }, () => this.save());
+    const st = STICKERS.find((x) => x.id === id);
+    if (st) this.speak(st.name);
   }
 
   /** Real device time, rounded to the configured minute snap. */
@@ -195,6 +220,18 @@ export class TimeIslandsGame {
 
   replay(): void {
     if (this.s.island !== null) this.start(this.s.island);
+  }
+
+  /** Index of the island after the current one, or null if this was the last. */
+  nextIsland(): number | null {
+    const next = (this.s.island ?? 0) + 1;
+    return next < ISLANDS.length ? next : null;
+  }
+
+  /** Move on to the next island from the completion overlay. */
+  goNext(): void {
+    const next = this.nextIsland();
+    if (next !== null) this.start(next);
   }
 
   // ---------- sandbox (free play) ----------

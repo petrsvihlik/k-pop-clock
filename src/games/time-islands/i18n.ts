@@ -33,6 +33,16 @@ export interface Strings {
   hintMatch: string;
   cheer: string;
   tryAgain: string;
+  /** Badge on the band member currently guiding the game. */
+  guide: string;
+  /** Hint above the band grid explaining that a member can be picked as guide. */
+  guideHint: string;
+  /** Completion overlay: make the just-earned member the guide. */
+  makeGuide: string;
+  /** Completion overlay: confirmation once they are the guide. */
+  guideSet: string;
+  /** Completion overlay: start the next island. */
+  next: string;
   praise: string[];
   islands: Record<string, string>;
 
@@ -76,6 +86,11 @@ export const STR: Record<Lang, Strings> = {
     hintMatch: "Podívej se pozorně na obě ručičky a zkus to znovu!",
     cheer: "Ty to zvládneš!",
     tryAgain: "Zkus to znovu!",
+    guide: "Průvodce",
+    guideHint: "Ťukni na člena kapely a bude tě provázet hrou!",
+    makeGuide: "Vezmi mě s sebou!",
+    guideSet: "Teď tě provázím hrou!",
+    next: "Další ostrov",
     praise: ["Výborně!", "Paráda!", "Super!", "Skvěle ti to jde!"],
     islands: {
       whole: "Celé hodiny",
@@ -146,6 +161,11 @@ export const STR: Record<Lang, Strings> = {
     hintMatch: "Look closely at both hands and try again!",
     cheer: "You can do it!",
     tryAgain: "Try again!",
+    guide: "Guide",
+    guideHint: "Tap a band member to make them your guide!",
+    makeGuide: "Take me with you!",
+    guideSet: "I'm your guide now!",
+    next: "Next island",
     praise: ["Great job!", "Awesome!", "Super!", "You got it!"],
     islands: {
       whole: "Whole Hours",
@@ -216,6 +236,11 @@ export const STR: Record<Lang, Strings> = {
     hintMatch: "¡Mira bien las dos agujas e inténtalo otra vez!",
     cheer: "¡Tú puedes!",
     tryAgain: "¡Inténtalo otra vez!",
+    guide: "Guía",
+    guideHint: "¡Toca a un miembro para que sea tu guía!",
+    makeGuide: "¡Llévame contigo!",
+    guideSet: "¡Ahora soy tu guía!",
+    next: "Siguiente isla",
     praise: ["¡Muy bien!", "¡Genial!", "¡Súper!", "¡Lo lograste!"],
     islands: {
       whole: "Horas en punto",

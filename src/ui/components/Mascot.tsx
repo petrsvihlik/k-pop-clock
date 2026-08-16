@@ -1,12 +1,18 @@
-import { STICKERS } from "@game/index.ts";
+import type { Sticker } from "@game/index.ts";
 import { Creature } from "@ui/components/Creature.tsx";
 
 /**
- * The fixed on-stage guide shown beside the speech bubble during a level —
- * Derpy, the goofy tiger spirit, borrowed from the collectible band.
+ * The on-stage guide beside the speech bubble. Whichever band member the player
+ * picked in "My band" (Derpy until someone joins) — see `game.guideSticker()`.
  */
-const TIGER = STICKERS.find((st) => st.id === "derpy")!;
-
-export function Mascot({ width = 84, height = 111 }: { width?: number; height?: number }) {
-  return <Creature sticker={TIGER} width={width} height={height} />;
+export function Mascot({
+  sticker,
+  width = 84,
+  height = 111,
+}: {
+  sticker: Sticker;
+  width?: number;
+  height?: number;
+}) {
+  return <Creature sticker={sticker} width={width} height={height} />;
 }

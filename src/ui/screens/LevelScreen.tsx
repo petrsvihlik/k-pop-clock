@@ -188,7 +188,7 @@ export function LevelScreen({ game, state }: { game: TimeIslandsGame; state: Gam
       {/* mascot + speech bubble */}
       <div style="display:flex;align-items:flex-end;gap:12px;width:100%;margin-top:4px">
         <div style={`flex:none;animation:${mascotAnim}`}>
-          <Mascot />
+          <Mascot sticker={game.guideSticker()} />
         </div>
         <div style={`background:${bubbleBg};color:#2a1a4a;border:3px solid #2a1a4a;border-radius:18px;border-bottom-left-radius:4px;padding:12px 18px;font-size:19px;font-weight:700;flex:1;line-height:1.35`}>
           {bubbleText}

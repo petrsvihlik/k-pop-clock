@@ -79,7 +79,7 @@ export function IntroScreen({ game, state }: { game: TimeIslandsGame; state: Gam
         {/* mascot + explanation */}
         <div style="display:flex;align-items:flex-end;gap:12px;width:100%">
           <div style="flex:none;animation:ti-float 3s ease-in-out infinite">
-            <Mascot />
+            <Mascot sticker={game.guideSticker()} />
           </div>
           <div style="background:#fff7f0;color:#2a1a4a;border:3px solid #2a1a4a;border-radius:18px;border-bottom-left-radius:4px;padding:14px 18px;flex:1;box-shadow:0 5px 0 #120a2e">
             <div style="font-size:22px;font-weight:800;margin-bottom:4px">{step.title}</div>
