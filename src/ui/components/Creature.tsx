@@ -532,11 +532,15 @@ export function Chibi({
       )}
       {human && hair === "braid" && (
         <g>
-          <circle cx="80" cy="56" r="5.5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
-          <circle cx="83" cy="68" r="5.5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
-          <circle cx="85" cy="80" r="5.5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
-          <circle cx="86" cy="92" r="5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
-          <circle cx="86.5" cy="100" r="3" fill="#ffcf5c" stroke={OUTLINE} stroke-width="2" />
+          {/* gathered high on the crown, then plaited down the side; each bead
+              overlaps the next so the braid reads as one strand */}
+          <circle cx="50" cy="13" r="10" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          <circle cx="65" cy="18" r="7.5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="74" cy="28" r="7" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="80" cy="39" r="6.5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="83" cy="50" r="6" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="85" cy="60" r="5.5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="85.5" cy="68" r="3.2" fill="#ffcf5c" stroke={OUTLINE} stroke-width="2" />
         </g>
       )}
 
