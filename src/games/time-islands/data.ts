@@ -31,7 +31,7 @@ export const ISLANDS: readonly Island[] = [
 
 export type Ears = "cat" | "round" | "none";
 export type Accessory = "mic" | "bolt" | "band" | "star" | "none";
-export type Hair = "braid" | "bob" | "buns" | "crop" | "curtain" | "fluffy";
+export type Hair = "braid" | "bob" | "buns" | "braidBuns" | "crop" | "curtain" | "fluffy";
 
 export interface Sticker {
   id: string;
@@ -82,6 +82,8 @@ export interface Sticker {
   jewelry?: boolean;
   /** Sleeveless top: bare, beefier arms. */
   muscle?: boolean;
+  /** Narrower torso — a capsule instead of a ball. */
+  slim?: boolean;
   /** Flirty wink (right eye closed). */
   wink?: boolean;
   /** Stoic half-lidded eyes. */
@@ -166,12 +168,12 @@ export const STICKERS: readonly Sticker[] = [
     ears: "none",
     acc: "none",
     skin: "#f2c9a0",
-    hair: "crop",
-    hairColor: "#7c3aed",
+    hair: "braidBuns",
+    hairColor: "#1c1230",
     cropTop: "#38bdf8",
     shorts: "#8b5cf6",
     shortsTrim: "#ffcf5c",
-    muscle: true,
+    slim: true,
   },
   {
     id: "romeo",

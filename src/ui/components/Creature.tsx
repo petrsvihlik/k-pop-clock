@@ -39,6 +39,7 @@ export interface ChibiProps {
   knives?: boolean;
   jewelry?: boolean;
   muscle?: boolean;
+  slim?: boolean;
   wink?: boolean;
   lids?: boolean;
   tiger?: boolean;
@@ -78,6 +79,7 @@ export function Chibi({
   knives = false,
   jewelry = false,
   muscle = false,
+  slim = false,
   wink = false,
   lids = false,
   tiger = false,
@@ -100,6 +102,15 @@ export function Chibi({
   const smile = !bird && !snake && !derp && !tiger;
   // The hair sprout only fits on creatures with a free head top.
   const ahoge = !human && acc !== "star" && acc !== "bolt" && !snake && !topHat;
+  // Torso geometry: a rounded rect from y=74 to 120, centred on x=50. The
+  // slim variant is a narrower capsule; arms and feet track its edges. Pieces
+  // that only appear on default-width characters (jacket, hoodie, jewelry,
+  // heart, gat straps, sash, badge) keep the default coordinates.
+  const bw = slim ? 38 : 46;
+  const bx = 50 - bw / 2;
+  const br = slim ? 17 : 20;
+  const armDx = bw / 2 + 5;
+  const footDx = slim ? 10 : 11;
   // Wide eyes sit a touch higher so the muzzle/mouth keeps clear of them.
   const eyeR = wideEyes ? 10.5 : 8;
   const eyeCy = wideEyes ? 47 : 49;
@@ -143,30 +154,30 @@ export function Chibi({
       )}
 
       {/* feet peeking out under the body */}
-      <ellipse cx="39" cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
-      <ellipse cx="61" cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
+      <ellipse cx={50 - footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
+      <ellipse cx={50 + footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
 
       {/* chubby body + stubby arms (bigger and bare when muscle) */}
-      <rect x="27" y="74" width="46" height="46" rx="20" fill={bodyFill} stroke={OUTLINE} stroke-width="3.5" />
+      <rect x={bx} y="74" width={bw} height="46" rx={br} fill={bodyFill} stroke={OUTLINE} stroke-width="3.5" />
       <ellipse
-        cx="22"
+        cx={50 - armDx}
         cy="90"
         rx={muscle ? 9 : 7.5}
         ry={muscle ? 12.5 : 11}
         fill={armFill}
         stroke={OUTLINE}
         stroke-width="3"
-        transform="rotate(18 22 90)"
+        transform={`rotate(18 ${50 - armDx} 90)`}
       />
       <ellipse
-        cx="78"
+        cx={50 + armDx}
         cy="90"
         rx={muscle ? 9 : 7.5}
         ry={muscle ? 12.5 : 11}
         fill={armFill}
         stroke={OUTLINE}
         stroke-width="3"
-        transform="rotate(-18 78 90)"
+        transform={`rotate(-18 ${50 + armDx} 90)`}
       />
       {spirit && <ellipse cx="50" cy="99" rx="13" ry="11" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
       {!spirit && !human && <circle cx="50" cy="99" r="11.5" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
@@ -175,15 +186,30 @@ export function Chibi({
       {shorts && (
         <g>
           {/* exactly the body's bottom rounded region, so nothing pokes past the silhouette */}
-          <path d="M27 100 A20 20 0 0 0 47 120 L53 120 A20 20 0 0 0 73 100 Z" fill={shorts} stroke={OUTLINE} stroke-width="2.5" />
+          <path
+            d={`M${bx} ${120 - br} A${br} ${br} 0 0 0 ${bx + br} 120 L${bx + bw - br} 120 A${br} ${br} 0 0 0 ${bx + bw} ${120 - br} Z`}
+            fill={shorts}
+            stroke={OUTLINE}
+            stroke-width="2.5"
+          />
           <path d="M50 112 L50 119" stroke={OUTLINE} stroke-width="2" />
           {shortsTrim && (
-            <path d="M33 102 L38 116 M67 102 L62 116" stroke={shortsTrim} stroke-width="2.5" stroke-linecap="round" />
+            <path
+              d={`M${bx + 6} ${122 - br} L${bx + 11} 116 M${bx + bw - 6} ${122 - br} L${bx + bw - 11} 116`}
+              stroke={shortsTrim}
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
           )}
         </g>
       )}
       {cropTop && (
-        <path d="M27 94 A20 20 0 0 1 47 74 L53 74 A20 20 0 0 1 73 94 Z" fill={cropTop} stroke={OUTLINE} stroke-width="2.5" />
+        <path
+          d={`M${bx} ${74 + br} A${br} ${br} 0 0 1 ${bx + br} 74 L${bx + bw - br} 74 A${br} ${br} 0 0 1 ${bx + bw} ${74 + br} Z`}
+          fill={cropTop}
+          stroke={OUTLINE}
+          stroke-width="2.5"
+        />
       )}
       {openJacket && (
         <g>
@@ -244,10 +270,22 @@ export function Chibi({
       {ahoge && <path d="M50 17 Q47 5 57 7 Q51 10 52 17 Z" fill={c} stroke={OUTLINE} stroke-width="3" stroke-linejoin="round" />}
 
       {/* hair (humans): under-shapes first, then the fringed cap, then side pieces */}
-      {human && hair === "buns" && (
+      {human && (hair === "buns" || hair === "braidBuns") && (
         <g>
-          <circle cx="25" cy="18" r="8" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
-          <circle cx="75" cy="18" r="8" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          <circle cx="25" cy="18" r={hair === "braidBuns" ? 8.5 : 8} fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          <circle cx="75" cy="18" r={hair === "braidBuns" ? 8.5 : 8} fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          {hair === "braidBuns" && (
+            // Stacked chevrons read as braid plaits; a light sheen so they show on dark hair too.
+            <path
+              d="M21 13 L25 16 L29 13 M20 17.5 L25 20.5 L30 17.5 M21 22 L25 25 L29 22 M71 13 L75 16 L79 13 M70 17.5 L75 20.5 L80 17.5 M71 22 L75 25 L79 22"
+              stroke="#ffffff"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+              opacity="0.35"
+            />
+          )}
         </g>
       )}
       {human && hair === "fluffy" && (
@@ -471,6 +509,7 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       knives={sticker.knives}
       jewelry={sticker.jewelry}
       muscle={sticker.muscle}
+      slim={sticker.slim}
       wink={sticker.wink}
       lids={sticker.lids}
       tiger={sticker.tiger}
