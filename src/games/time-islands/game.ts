@@ -78,6 +78,26 @@ const CONFETTI_COLORS = ["#ff5fa2", "#4fd8e8", "#ffcf5c", "#7ee081", "#a78bfa", 
 /** Order in which band members join, one per finished level with more to give. */
 const JOIN_ORDER = ["rumi", "mira", "zoey", "derpy", "sussie", "jinu", "saja"];
 
+/**
+ * Reconcile a loaded save: renamed ids are mapped, ids from retired character
+ * sets are dropped, and — since every finished level recruits one member — the
+ * band is topped up to at least one member per finished island. Without the
+ * top-up, saves written before a roster change keep their level stars but lose
+ * the members that were earned alongside them. Extra members from replays are
+ * kept as they are.
+ */
+function reconcileStickers(stickers: string[], done: Record<string, boolean>): string[] {
+  const kept = stickers
+    .map((id) => RENAMED_IDS[id] ?? id)
+    .filter((id, i, all) => all.indexOf(id) === i && STICKERS.some((st) => st.id === id));
+  const earnedLevels = ISLANDS.filter((isl) => done[isl.id]).length;
+  for (const id of JOIN_ORDER) {
+    if (kept.length >= earnedLevels) break;
+    if (!kept.includes(id)) kept.push(id);
+  }
+  return kept;
+}
+
 /** Sticker ids that were renamed; saves made under the old id are migrated on load. */
 const RENAMED_IDS: Record<string, string> = {
   nari: "rumi",
@@ -108,10 +128,9 @@ export class TimeIslandsGame {
       defaults: { lang: "cs", done: {}, stickers: [], guide: DEFAULT_GUIDE, seenIntro: false },
     });
     const saved = this.save_.load();
-    // Migrate renamed ids, then drop ids from retired character sets so old saves stay consistent.
-    saved.stickers = saved.stickers
-      .map((id) => RENAMED_IDS[id] ?? id)
-      .filter((id, i, all) => all.indexOf(id) === i && STICKERS.some((st) => st.id === id));
+    // Guard against hand-edited or truncated blobs before reconciling.
+    saved.done = saved.done && typeof saved.done === "object" ? saved.done : {};
+    saved.stickers = reconcileStickers(Array.isArray(saved.stickers) ? saved.stickers : [], saved.done);
     const savedGuide = RENAMED_IDS[saved.guide] ?? saved.guide;
     const guide = STICKERS.some((st) => st.id === savedGuide) ? savedGuide : DEFAULT_GUIDE;
     const now = this.nowParts();
@@ -145,6 +164,9 @@ export class TimeIslandsGame {
       introStep: 0,
       seenIntro: saved.seenIntro,
     });
+
+    // Write the reconciled shape back so the stored blob is healed in place.
+    this.save();
   }
 
   // ---------- convenience ----------
