@@ -14,7 +14,7 @@ import { board, genQ, type Card, type Question } from "./questions.ts";
 import { from24, timeWords, type Period } from "./time.ts";
 import { Sounds } from "./sounds.ts";
 
-export type Screen = "map" | "play" | "stickers" | "sandbox" | "intro";
+export type Screen = "map" | "play" | "stickers" | "sandbox" | "intro" | "finale";
 export type Feedback = null | "correct" | "wrong";
 
 export interface ConfettiBit {
@@ -75,8 +75,12 @@ const DEFAULT_GUIDE = "derpy";
 const SAVE_KEY = "timeislands_v1";
 const CONFETTI_COLORS = ["#ff5fa2", "#4fd8e8", "#ffcf5c", "#7ee081", "#a78bfa", "#ff9d5c"];
 
-/** Order in which band members join, one per finished level with more to give. */
-const JOIN_ORDER = ["rumi", "mira", "zoey", "derpy", "sussie", "jinu", "saja"];
+/**
+ * Order in which band members join, one per finished level with more to give.
+ * Derived from the roster so adding a member to `STICKERS` is all it takes —
+ * there is no second list to keep in sync.
+ */
+const JOIN_ORDER: readonly string[] = STICKERS.map((s) => s.id);
 
 /**
  * Reconcile a loaded save: renamed ids are mapped, ids from retired character
@@ -185,8 +189,14 @@ export class TimeIslandsGame {
     return STR[this.s.lang];
   }
 
-  /** Invalidate pending level callbacks and return the new session token. */
+  /**
+   * Invalidate pending level callbacks and return the new session token. Also
+   * drops any hand-drag still in progress: a pointer that never reported its
+   * release would otherwise keep dragging the clock of the screen it started
+   * on while the player merely hovers over the next one.
+   */
   private endSession(): number {
+    this.drag = null;
     return ++this.session;
   }
 
@@ -251,6 +261,22 @@ export class TimeIslandsGame {
     this.store.setState({ screen: "stickers" });
   }
 
+  /** Every island finished — the closing concert is unlocked. */
+  allIslandsDone(): boolean {
+    return this.s.cheatUnlocked || ISLANDS.every((isl) => this.s.done[isl.id]);
+  }
+
+  /** The closing concert: the whole band on stage. */
+  goFinale(): void {
+    if (!this.allIslandsDone()) {
+      this.sounds.wrong();
+      return;
+    }
+    this.endSession();
+    this.sounds.win();
+    this.store.setState({ screen: "finale", showComplete: false }, () => this.speak(this.T().finaleChant));
+  }
+
   goMap(): void {
     this.endSession();
     this.store.setState({ screen: "map", showComplete: false });
@@ -280,10 +306,14 @@ export class TimeIslandsGame {
     this.store.setState({ screen: "sandbox", sbH: n.h12, sbM: n.m, sbPeriod: n.period, sbLive: false });
   }
 
-  /** Snap the sandbox clock to the real device time. */
+  /**
+   * Snap the sandbox clock to the real device time. In beginner mode the minute
+   * hand is hidden, so minutes stay at zero — otherwise the hour hand would
+   * drift off its numeral with nothing on screen to explain why.
+   */
   setSandboxNow(): void {
     const n = this.nowParts();
-    this.store.setState({ sbH: n.h12, sbM: n.m, sbPeriod: n.period });
+    this.store.setState({ sbH: n.h12, sbM: this.s.sbHideMin ? 0 : n.m, sbPeriod: n.period });
   }
 
   toggleSbLive(): void {
@@ -457,7 +487,7 @@ export class TimeIslandsGame {
     const s = this.s;
     if (s.feedback === "correct" && s.correct >= this.total()) return;
     const card = s.cards[i];
-    if (card.matched) return;
+    if (!card || card.matched) return;
     if (s.sel === i) {
       this.store.setState({ sel: -1 });
       return;
@@ -468,6 +498,10 @@ export class TimeIslandsGame {
       return;
     }
     const a = s.cards[s.sel];
+    if (!a) {
+      this.store.setState({ sel: i });
+      return;
+    }
     if (a.pair === card.pair && a.kind !== card.kind) {
       const cards = s.cards.map((c, idx) => (idx === i || idx === s.sel ? { ...c, matched: true } : c));
       const praise = pick(this.T().praise);

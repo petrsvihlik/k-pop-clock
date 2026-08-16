@@ -125,6 +125,41 @@ export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameS
             </div>
           );
         })}
+
+        {/* the closing concert, at the end of the chain */}
+        {(() => {
+          const open = game.allIslandsDone();
+          return (
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px">
+              <button
+                onClick={() => game.goFinale()}
+                class="press-3"
+                aria-label={L.finale}
+                style={`width:124px;height:130px;background:transparent;border:none;cursor:${open ? "pointer" : "default"};display:flex;align-items:center;justify-content:center;position:relative;padding:0 0 6px 0`}
+              >
+                <Emblem
+                  size={124}
+                  fill={open ? "#ffcf5c" : "#3b2f63"}
+                  outline="#2a1a4a"
+                  shadow="#120a2e"
+                  color="#2a1a4a"
+                  glyph={null}
+                  weight={2.4}
+                  latticeOpacity={open ? 0.16 : 0.1}
+                  style="position:absolute;inset:0"
+                />
+                <span style={`position:relative;font-size:46px;opacity:${open ? 1 : 0}`}>🎤</span>
+                <svg width="40" height="40" viewBox="0 0 36 36" style={`position:absolute;opacity:${open ? 0 : 1}`}>
+                  <rect x="8" y="16" width="20" height="15" rx="4" fill="#8b7fb8" />
+                  <path d="M12 16 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#8b7fb8" stroke-width="4" />
+                </svg>
+              </button>
+              <div style={`font-size:17px;font-weight:700;color:${open ? "#fff7f0" : "#8b7fb8"};background:#2c1b57;padding:4px 16px;border-radius:999px;border:2px solid #3b2f63;white-space:nowrap`}>
+                {L.finale}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

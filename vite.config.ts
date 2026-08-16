@@ -26,9 +26,9 @@ export default defineConfig({
   base: "./",
   plugins: [versionFile],
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
-  esbuild: {
-    jsx: "automatic",
-    jsxImportSource: "preact",
+  // Vite 8 transforms with oxc; JSX is routed to Preact's automatic runtime.
+  oxc: {
+    jsx: { runtime: "automatic", importSource: "preact" },
   },
   resolve: {
     alias: {

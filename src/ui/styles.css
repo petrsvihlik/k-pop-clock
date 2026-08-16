@@ -104,6 +104,23 @@ button {
     opacity: 0.7;
   }
 }
+/* Finale: musical notes drifting up through the stage lights. */
+@keyframes ti-rise {
+  0% {
+    transform: translateY(0) rotate(-8deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-104vh) rotate(14deg);
+    opacity: 0;
+  }
+}
 @keyframes ti-float {
   0%,
   100% {

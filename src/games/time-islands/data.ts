@@ -257,7 +257,7 @@ export const STICKERS: readonly Sticker[] = [
     tripleEyes: true,
     eyeColor: "#ffcf5c",
     beakColor: "#17102b",
-    voice: { pitch: 1.7, rate: 1.12 },
+    voice: { pitch: 1.7, rate: 1.12, prefer: "female" },
   },
   {
     id: "jinu",

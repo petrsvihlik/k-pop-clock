@@ -12,6 +12,8 @@ export function CompleteOverlay({ game, state }: { game: TimeIslandsGame; state:
   const completeSub = earned ? L.earned : L.replayDone;
   const isGuide = !!earned && state.guide === earned.id;
   const hasNext = game.nextIsland() !== null;
+  // Everything finished: send them straight to the closing concert instead.
+  const showFinale = game.allIslandsDone();
 
   return (
     <div style="position:fixed;inset:0;background:rgba(18,10,46,0.82);display:flex;align-items:center;justify-content:center;z-index:50">
@@ -59,6 +61,11 @@ export function CompleteOverlay({ game, state }: { game: TimeIslandsGame; state:
           {hasNext && (
             <button onClick={() => game.goNext()} class="press-3" style={`background:#7ee081;color:#1c4a2a;${BTN}`}>
               {L.next} →
+            </button>
+          )}
+          {showFinale && (
+            <button onClick={() => game.goFinale()} class="press-3" style={`background:#ffcf5c;color:#4a3600;${BTN}`}>
+              🎤 {L.toFinale}
             </button>
           )}
         </div>

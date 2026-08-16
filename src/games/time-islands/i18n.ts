@@ -43,6 +43,12 @@ export interface Strings {
   guideSet: string;
   /** Completion overlay: start the next island. */
   next: string;
+  /** Closing concert: the stage node on the map and its screen title. */
+  finale: string;
+  /** Closing concert: the band's chant, shown in speech bubbles. */
+  finaleChant: string;
+  /** Completion overlay: go to the closing concert. */
+  toFinale: string;
   /** Update banner: a newer version is deployed. */
   updateReady: string;
   /** Update banner / map button: reload onto the newest version. */
@@ -95,6 +101,9 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "Vezmi mě s sebou!",
     guideSet: "Teď tě provázím hrou!",
     next: "Další ostrov",
+    finale: "Velký koncert",
+    finaleChant: "This is how it's DONE DONE DONE!",
+    toFinale: "Na pódium!",
     updateReady: "Je tu nová verze hry!",
     updateNow: "Načíst",
     praise: ["Výborně!", "Paráda!", "Super!", "Skvěle ti to jde!"],
@@ -172,6 +181,9 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "Take me with you!",
     guideSet: "I'm your guide now!",
     next: "Next island",
+    finale: "The big concert",
+    finaleChant: "This is how it's DONE DONE DONE!",
+    toFinale: "To the stage!",
     updateReady: "A new version is ready!",
     updateNow: "Reload",
     praise: ["Great job!", "Awesome!", "Super!", "You got it!"],
@@ -249,6 +261,9 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "¡Llévame contigo!",
     guideSet: "¡Ahora soy tu guía!",
     next: "Siguiente isla",
+    finale: "El gran concierto",
+    finaleChant: "This is how it's DONE DONE DONE!",
+    toFinale: "¡Al escenario!",
     updateReady: "¡Hay una versión nueva!",
     updateNow: "Recargar",
     praise: ["¡Muy bien!", "¡Genial!", "¡Súper!", "¡Lo lograste!"],
