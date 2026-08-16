@@ -103,8 +103,16 @@ export interface Sticker {
 
   /** Iris color around the pupils (default: solid dark eyes). */
   eyeColor?: string;
+  /** Eye-white color; when set the iris shrinks to a ring inside it and the eye glows softly. */
+  sclera?: string;
+  /** Unfocused: each pupil drifts a different way. */
+  crazyEyes?: boolean;
   /** Extra-big round eyes. */
   wideEyes?: boolean;
+  /** Inner-ear color for round ears (default: soft cream). */
+  earInner?: string;
+  /** Rosette spots on the chest, in this color. */
+  rosettes?: string;
   /** Black top hat (medium height). */
   topHat?: boolean;
   /** Three small eyes stacked vertically down the face center. */
@@ -161,13 +169,18 @@ export const STICKERS: readonly Sticker[] = [
   {
     id: "derpy",
     name: "Derpy",
-    color: "#8fd3f8",
+    color: "#2a85ff",
     ears: "round",
     acc: "none",
     tiger: true,
-    accent: "#fff7f0",
-    eyeColor: "#ff9d3d",
+    outfit: "#2a85ff",
+    accent: "#ffffff",
+    rosettes: "#4da6ff",
+    earInner: "#ffb6c1",
+    sclera: "#ffeb3b",
+    eyeColor: "#f44336",
     wideEyes: true,
+    crazyEyes: true,
   },
   {
     id: "sussie",

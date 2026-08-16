@@ -48,7 +48,11 @@ export interface ChibiProps {
   lids?: boolean;
   tiger?: boolean;
   eyeColor?: string;
+  sclera?: string;
+  crazyEyes?: boolean;
   wideEyes?: boolean;
+  earInner?: string;
+  rosettes?: string;
   topHat?: boolean;
   tripleEyes?: boolean;
   beakColor?: string;
@@ -90,7 +94,11 @@ export function Chibi({
   lids = false,
   tiger = false,
   eyeColor,
+  sclera,
+  crazyEyes = false,
   wideEyes = false,
+  earInner,
+  rosettes,
   topHat = false,
   tripleEyes = false,
   beakColor = "#ff9d5c",
@@ -118,14 +126,25 @@ export function Chibi({
   // Wide eyes sit a touch higher so the muzzle/mouth keeps clear of them.
   const eyeR = wideEyes ? 10.5 : 8;
   const eyeCy = wideEyes ? 47 : 49;
-  const eye = (cx: number) => (
-    <g>
-      {eyeColor && <circle cx={cx} cy={eyeCy} r={eyeR} fill={eyeColor} />}
-      <circle cx={cx} cy={eyeCy} r={eyeColor ? eyeR * 0.5 : eyeR} fill={OUTLINE} />
-      <circle cx={cx - 3} cy={eyeCy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />
-      <circle cx={cx + 3} cy={eyeCy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
-    </g>
-  );
+  // Eye anatomy: solid dark by default; `eyeColor` adds an iris; `sclera` adds
+  // an eye-white with a soft glow and shrinks the iris to a ring inside it.
+  // `crazyEyes` lets each pupil wander a different way (side: -1 left, 1 right).
+  const eye = (cx: number, side: -1 | 1) => {
+    const dx = crazyEyes ? side * 2.2 : 0;
+    const dy = crazyEyes ? (side < 0 ? -2 : 2.5) : 0;
+    const irisR = sclera ? eyeR * 0.62 : eyeR;
+    const pupilR = sclera ? eyeR * 0.3 : eyeColor ? eyeR * 0.5 : eyeR;
+    return (
+      <g>
+        {sclera && <circle cx={cx} cy={eyeCy} r={eyeR + 2.5} fill={sclera} opacity="0.35" />}
+        {sclera && <circle cx={cx} cy={eyeCy} r={eyeR} fill={sclera} stroke={OUTLINE} stroke-width="2" />}
+        {eyeColor && <circle cx={cx + dx} cy={eyeCy + dy} r={irisR} fill={eyeColor} />}
+        <circle cx={cx + dx} cy={eyeCy + dy} r={pupilR} fill={OUTLINE} />
+        <circle cx={cx + dx - 3} cy={eyeCy + dy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />
+        <circle cx={cx + dx + 3} cy={eyeCy + dy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
+      </g>
+    );
+  };
   return (
     <svg width={width} height={height} viewBox="0 0 100 132">
       {/* ears (behind the head) */}
@@ -141,8 +160,8 @@ export function Chibi({
         <g>
           <circle cx="23" cy="17" r="10" fill={c} stroke={OUTLINE} stroke-width="4" />
           <circle cx="77" cy="17" r="10" fill={c} stroke={OUTLINE} stroke-width="4" />
-          <circle cx="23" cy="17" r="4.5" fill={CREAM} opacity="0.55" />
-          <circle cx="77" cy="17" r="4.5" fill={CREAM} opacity="0.55" />
+          <circle cx="23" cy="17" r="4.5" fill={earInner ?? CREAM} opacity={earInner ? 0.9 : 0.55} />
+          <circle cx="77" cy="17" r="4.5" fill={earInner ?? CREAM} opacity={earInner ? 0.9 : 0.55} />
         </g>
       )}
 
@@ -150,7 +169,7 @@ export function Chibi({
       {tiger && (
         <g>
           <path d="M72 114 Q88 112 85 98" stroke={c} stroke-width="7" fill="none" stroke-linecap="round" />
-          <path d="M80 111 L85 108 M83 104 L87 102" stroke="#1a1030" stroke-width="3" stroke-linecap="round" />
+          <path d="M80 111 L85 108 M83 104 L87 102" stroke="#111111" stroke-width="3" stroke-linecap="round" />
         </g>
       )}
       {/* long pigtails hang behind the shoulders; the roots tuck under the head, ties go on later */}
@@ -203,6 +222,15 @@ export function Chibi({
       />
       {tiger && <ellipse cx="50" cy="99" rx="13" ry="11" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
       {!tiger && !human && <circle cx="50" cy="99" r="11.5" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
+      {rosettes && (
+        <g fill={rosettes}>
+          <circle cx="50" cy="83" r="2.5" />
+          <circle cx="33" cy="91" r="3" />
+          <circle cx="67" cy="91" r="3" />
+          <circle cx="35" cy="109" r="2.5" />
+          <circle cx="65" cy="109" r="2.5" />
+        </g>
+      )}
 
       {/* outfit detailing */}
       {shorts && (
@@ -415,20 +443,20 @@ export function Chibi({
         <g>
           <path
             d="M22 36 Q28 38 26 45 M78 36 Q72 38 74 45 M45 21 L46 29 M55 21 L54 29"
-            stroke="#1a1030"
+            stroke="#111111"
             stroke-width="3.5"
             fill="none"
             stroke-linecap="round"
           />
-          <path d="M30 34 Q36 31 42 34 M58 34 Q64 31 70 34" stroke="#1a1030" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <path d="M30 34 Q36 31 42 34 M58 34 Q64 31 70 34" stroke="#111111" stroke-width="2.5" fill="none" stroke-linecap="round" />
         </g>
       )}
 
       {/* big glossy eyes */}
       {!derp && !tripleEyes && (
         <g>
-          {eye(36)}
-          {!wink && eye(64)}
+          {eye(36, -1)}
+          {!wink && eye(64, 1)}
           {wink && <path d="M58 47 Q64 52 70 47" stroke={OUTLINE} stroke-width="3" fill="none" stroke-linecap="round" />}
         </g>
       )}
@@ -482,11 +510,14 @@ export function Chibi({
       {bird && <polygon points="44,54 56,54 50,63" fill={beakColor} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />}
       {tiger && (
         <g>
-          <ellipse cx="50" cy="59" rx="13" ry="9.5" fill={CREAM} stroke={OUTLINE} stroke-width="2.5" />
-          <path d="M47 55 Q50 58 53 55 Z" fill="#1a1030" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
+          {/* white muzzle, red nose, goofy grin: tongue, flat teeth, little tusks at the corners */}
+          <ellipse cx="50" cy="59" rx="13" ry="9.5" fill="#ffffff" stroke={OUTLINE} stroke-width="2.5" />
+          <path d="M47 55 Q50 58 53 55 Z" fill="#e53935" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
           <path d="M39 60 Q50 70 61 60" stroke={OUTLINE} stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <path d="M46.5 66 Q50 73 53.5 66 Z" fill="#e53935" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
           <rect x="45" y="63" width="4" height="4" rx="1" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" />
           <rect x="51" y="63" width="4" height="4" rx="1" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" />
+          <path d="M40 61 L42.5 66.5 L45 61.5 Z M55 61.5 L57.5 66.5 L60 61 Z" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" stroke-linejoin="round" />
         </g>
       )}
       {derp && <path d="M46 61 Q50 70 54 61 Z" fill="#ff5fa2" stroke={OUTLINE} stroke-width="2" />}
@@ -633,7 +664,11 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       lids={sticker.lids}
       tiger={sticker.tiger}
       eyeColor={sticker.eyeColor}
+      sclera={sticker.sclera}
+      crazyEyes={sticker.crazyEyes}
       wideEyes={sticker.wideEyes}
+      earInner={sticker.earInner}
+      rosettes={sticker.rosettes}
       topHat={sticker.topHat}
       tripleEyes={sticker.tripleEyes}
       beakColor={sticker.beakColor}
