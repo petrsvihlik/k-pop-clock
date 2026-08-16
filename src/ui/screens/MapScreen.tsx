@@ -1,5 +1,6 @@
 import { ISLANDS, LANGS, STICKERS, STR, type GameState, type Lang } from "@game/index.ts";
 import type { TimeIslandsGame } from "@game/index.ts";
+import { Emblem } from "@ui/components/Emblem.tsx";
 
 const ISLAND_PATH =
   "M30 0 C30 58, 170 59, 170 117 C170 175, 30 175, 30 233 C30 291, 170 292, 170 350 C170 408, 30 409, 30 467 C30 525, 170 525, 170 583 C170 641, 30 642, 30 700";
@@ -59,6 +60,10 @@ export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameS
 
       {/* island chain */}
       <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:36px;padding:38px 0 10px 0;width:100%">
+        {/* emblem watermark behind the chain */}
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.06;pointer-events:none">
+          <Emblem size={560} color="#ffffff" glyph="#ffffff" weight={2.6} />
+        </div>
         <svg
           style="position:absolute;top:90px;left:50%;transform:translateX(-100px);width:200px;height:calc(100% - 200px)"
           viewBox="0 0 200 700"
@@ -79,14 +84,27 @@ export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameS
               <button
                 onClick={() => game.start(i)}
                 class="press-3"
-                style={`width:112px;height:112px;border-radius:50%;background:${locked ? "#3b2f63" : isl.color};border:5px solid ${done ? "#ffcf5c" : "#2a1a4a"};box-shadow:0 6px 0 #120a2e;cursor:${locked ? "default" : "pointer"};display:flex;align-items:center;justify-content:center;position:relative;padding:0`}
+                aria-label={L.islands[isl.id]}
+                style={`width:124px;height:130px;background:transparent;border:none;cursor:${locked ? "default" : "pointer"};display:flex;align-items:center;justify-content:center;position:relative;padding:0 0 6px 0`}
               >
-                <span style={`font-size:46px;font-weight:800;color:#2a1a4a;opacity:${locked ? 0 : 1}`}>{i + 1}</span>
+                {/* the island is the emblem's quatrefoil silhouette */}
+                <Emblem
+                  size={124}
+                  fill={locked ? "#3b2f63" : isl.color}
+                  outline={done ? "#ffcf5c" : "#2a1a4a"}
+                  shadow="#120a2e"
+                  color="#2a1a4a"
+                  glyph={null}
+                  weight={2.4}
+                  latticeOpacity={locked ? 0.1 : 0.16}
+                  style="position:absolute;inset:0"
+                />
+                <span style={`position:relative;font-size:46px;font-weight:800;color:#2a1a4a;opacity:${locked ? 0 : 1}`}>{i + 1}</span>
                 <svg width="40" height="40" viewBox="0 0 36 36" style={`position:absolute;opacity:${locked ? 1 : 0}`}>
                   <rect x="8" y="16" width="20" height="15" rx="4" fill="#8b7fb8" />
                   <path d="M12 16 v-4 a6 6 0 0 1 12 0 v4" fill="none" stroke="#8b7fb8" stroke-width="4" />
                 </svg>
-                <svg width="36" height="36" viewBox="0 0 34 34" style={`position:absolute;top:-10px;right:-10px;opacity:${done ? 1 : 0}`}>
+                <svg width="36" height="36" viewBox="0 0 34 34" style={`position:absolute;top:2px;right:2px;opacity:${done ? 1 : 0}`}>
                   <polygon points="17,2 21,12 32,13 24,20 26,31 17,25 8,31 10,20 2,13 13,12" fill="#ffcf5c" stroke="#2a1a4a" stroke-width="2" />
                 </svg>
               </button>
