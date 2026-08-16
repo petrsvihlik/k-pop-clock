@@ -141,8 +141,20 @@ export interface Sticker {
   hypnoEyes?: boolean;
   /** Goofy cross-eyed gaze: both pupils pull toward the nose, slightly mismatched. */
   crossEyes?: boolean;
-  /** Stripe / whisker-marking color for the tiger spirit. */
+  /** Stripe / brow-marking color for the tiger spirit. */
   stripeColor?: string;
+  /** Outermost iris ring, outside `eyeColor` — gives a layered predator eye. */
+  eyeRim?: string;
+  /** Eye radius override in viewBox units (default 8, or 10.5 with `wideEyes`). */
+  eyeSize?: number;
+  /** Whisker color for the tiger spirit. */
+  whiskers?: string;
+  /** Nose fill for the tiger spirit. */
+  noseColor?: string;
+  /** Sit on the haunches like a cat instead of standing on two feet. */
+  sitting?: boolean;
+  /** A flowerpot knocked on its side at their feet, soil spilled under a paw. */
+  flowerpot?: boolean;
   /** Extra-big round eyes. */
   wideEyes?: boolean;
   /** Inner-ear color for round ears (default: soft cream). */
@@ -210,18 +222,26 @@ export const STICKERS: readonly Sticker[] = [
   {
     id: "derpy",
     name: "Derpy",
-    color: "#7ec8e3",
+    color: "#2f7fd4",
     ears: "soft",
     acc: "none",
     tiger: true,
-    outfit: "#7ec8e3",
-    accent: "#ffffff",
-    rosettes: "#2a4365",
-    stripeColor: "#2a4365",
+    outfit: "#2f7fd4",
+    accent: "#bfe3f7",
+    rosettes: "#1b4f96",
+    stripeColor: "#16305e",
     earInner: "#f472b6",
-    sclera: "#fde047",
-    wideEyes: true,
+    noseColor: "#f06292",
+    whiskers: "#ffffff",
+    // layered predator eye: crimson rim, orange middle, yellow centre, slit pupil
+    eyeRim: "#e6294b",
+    eyeColor: "#ff8c1a",
+    sclera: "#ffd428",
+    eyeSize: 11.5,
+    slitPupils: true,
     crossEyes: true,
+    sitting: true,
+    flowerpot: true,
     voice: { pitch: 0.75, rate: 0.85, prefer: "male" },
   },
   {

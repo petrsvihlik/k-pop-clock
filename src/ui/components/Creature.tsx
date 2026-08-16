@@ -62,6 +62,12 @@ export interface ChibiProps {
   hypnoEyes?: boolean;
   crossEyes?: boolean;
   stripeColor?: string;
+  eyeRim?: string;
+  eyeSize?: number;
+  whiskers?: string;
+  noseColor?: string;
+  sitting?: boolean;
+  flowerpot?: boolean;
   wideEyes?: boolean;
   earInner?: string;
   rosettes?: string;
@@ -120,6 +126,12 @@ export function Chibi({
   hypnoEyes = false,
   crossEyes = false,
   stripeColor = "#111111",
+  eyeRim,
+  eyeSize,
+  whiskers,
+  noseColor = "#e53935",
+  sitting = false,
+  flowerpot = false,
   wideEyes = false,
   earInner,
   rosettes,
@@ -166,9 +178,9 @@ export function Chibi({
       <path d="M0 9.8 L-1.6 13.5 M0 9.8 L0 14 M0 9.8 L1.6 13.5" stroke="#008080" stroke-width="1.1" stroke-linecap="round" />
     </g>
   );
-  // Wide eyes sit a touch higher so the muzzle/mouth keeps clear of them.
-  const eyeR = wideEyes ? 10.5 : 8;
-  const eyeCy = wideEyes ? 47 : 49;
+  // Bigger eyes sit higher so the muzzle/mouth keeps clear of them.
+  const eyeR = eyeSize ?? (wideEyes ? 10.5 : 8);
+  const eyeCy = eyeSize ? 43 : wideEyes ? 47 : 49;
   // Eye anatomy: solid dark by default; `eyeColor` adds an iris; `sclera` adds
   // an eye-white with a soft glow and shrinks the iris to a ring inside it;
   // `hypnoEyes` replaces the iris with a spiral coiling out from the pupil;
@@ -182,9 +194,14 @@ export function Chibi({
     const py = eyeCy + (crossEyes ? dy : 0);
     return (
       <g>
-        {sclera && <circle cx={cx} cy={eyeCy} r={eyeR + 2.5} fill={sclera} opacity="0.35" />}
-        {sclera && <circle cx={cx} cy={eyeCy} r={eyeR} fill={sclera} stroke={OUTLINE} stroke-width="2" />}
-        {eyeColor && !hypnoEyes && <circle cx={px} cy={py} r={irisR} fill={eyeColor} />}
+        {sclera && <circle cx={cx} cy={eyeCy} r={eyeR + 2.5} fill={eyeRim ?? sclera} opacity="0.3" />}
+        {/* rim → iris → centre, drawn largest first so they nest as rings */}
+        {eyeRim && <circle cx={cx} cy={eyeCy} r={eyeR} fill={eyeRim} stroke={OUTLINE} stroke-width="2" />}
+        {sclera && !eyeRim && <circle cx={cx} cy={eyeCy} r={eyeR} fill={sclera} stroke={OUTLINE} stroke-width="2" />}
+        {eyeColor && !hypnoEyes && (
+          <circle cx={px} cy={py} r={eyeRim ? eyeR * 0.82 : irisR} fill={eyeColor} />
+        )}
+        {sclera && eyeRim && <circle cx={px} cy={py} r={eyeR * 0.55} fill={sclera} />}
         {hypnoEyes && (
           // Half-circle arcs of growing radius = a compass spiral, ~6 units across.
           <path
@@ -197,7 +214,15 @@ export function Chibi({
           />
         )}
         {slitPupils ? (
-          <ellipse cx={px} cy={py} rx="1.6" ry={eyeR * 0.72} fill={OUTLINE} />
+          // On a layered eye the slit stays inside the innermost ring — short and
+          // wide — rather than running the full height of the eyeball.
+          <ellipse
+            cx={px}
+            cy={py}
+            rx={eyeRim ? eyeR * 0.55 * 0.38 : 1.6}
+            ry={eyeRim ? eyeR * 0.55 * 0.72 : eyeR * 0.72}
+            fill={OUTLINE}
+          />
         ) : (
           <circle cx={px} cy={py} r={pupilR} fill={OUTLINE} />
         )}
@@ -240,11 +265,57 @@ export function Chibi({
         </g>
       )}
 
-      {/* tails (behind the body) */}
-      {tiger && (
+      {/* tails (behind the body) — a sitting cat curls its tail around the base */}
+      {tiger && !sitting && (
         <g>
           <path d="M72 114 Q88 112 85 98" stroke={c} stroke-width="7" fill="none" stroke-linecap="round" />
           <path d="M80 111 L85 108 M83 104 L87 102" stroke={stripeColor} stroke-width="3" stroke-linecap="round" />
+        </g>
+      )}
+      {tiger && sitting && (
+        <g>
+          {/* dark outline, fur-coloured tail, banded rings, black tip */}
+          <path
+            d="M74 118 Q93 120 94 106 Q94 94 85 93"
+            stroke={OUTLINE}
+            stroke-width="11"
+            fill="none"
+            stroke-linecap="round"
+          />
+          <path d="M74 118 Q93 120 94 106 Q94 94 85 93" stroke={c} stroke-width="7.5" fill="none" stroke-linecap="round" />
+          {/* rings: short dashes laid along the same curve */}
+          <path
+            d="M74 118 Q93 120 94 106 Q94 94 85 93"
+            stroke={stripeColor}
+            stroke-width="7.5"
+            fill="none"
+            stroke-linecap="butt"
+            stroke-dasharray="3.5 8"
+            stroke-dashoffset="6"
+          />
+          {/* black tip at the end of the curve */}
+          <path d="M89.5 95.5 Q86.5 93 85 93" stroke={stripeColor} stroke-width="7.5" fill="none" stroke-linecap="round" />
+        </g>
+      )}
+      {/* knocked-over flowerpot, drawn before the body so a paw lands on top of it */}
+      {flowerpot && (
+        <g stroke={OUTLINE} stroke-linejoin="round">
+          {/* soil spread along the ground; the paws come down on top of it */}
+          <path d="M12 127 Q30 131 48 127 Q30 121 14 123 Z" fill="#4a2f1d" stroke-width="2" />
+          {/* pot on its side, narrow base to the left, mouth tipped toward him */}
+          <path d="M22 105 L5 110 L5 123 L22 128 Z" fill="#c1663f" stroke-width="2.5" />
+          <path d="M9 111 L9 122" stroke="#a04f2f" stroke-width="2" fill="none" />
+          <ellipse cx="22" cy="116.5" rx="3.6" ry="11.5" fill="#a04f2f" stroke-width="2.5" />
+          <ellipse cx="22.5" cy="116.5" rx="2" ry="9" fill="#3d2416" stroke="none" />
+          {/* the plant that came out with it, arcing up clear of his flank */}
+          <path d="M20 113 Q12 107 11 97" stroke="#4f9c52" stroke-width="2.2" fill="none" stroke-linecap="round" />
+          <path d="M13 105 Q7 103 4 98 Q11 98 14 102 Z" fill="#7ee081" stroke-width="1.8" />
+          <g stroke-width="1.8">
+            <circle cx="11" cy="93" r="3.2" fill="#ff5fa2" />
+            <circle cx="16" cy="95" r="2.8" fill="#ff5fa2" />
+            <circle cx="13" cy="88" r="2.8" fill="#ff5fa2" />
+            <circle cx="13" cy="92.4" r="1.6" fill="#ffcf5c" stroke="none" />
+          </g>
         </g>
       )}
       {/* long pigtails hang behind the shoulders; the roots tuck under the head, ties go on later */}
@@ -257,7 +328,7 @@ export function Chibi({
       )}
 
       {/* feet peeking out under the body — or heeled boots, whose shafts hide behind the body */}
-      {!boots && (
+      {!boots && !sitting && (
         <g>
           <ellipse cx={50 - footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
           <ellipse cx={50 + footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
@@ -273,8 +344,28 @@ export function Chibi({
           </g>
         ))}
 
-      {/* chubby body + stubby arms (bigger and bare when muscle) */}
-      <rect x={bx} y="74" width={bw} height="46" rx={br} fill={bodyFill} stroke={OUTLINE} stroke-width="3.5" />
+      {/* sitting cat: haunches flaring to the ground, hind paws at the sides,
+          front legs dropping straight down in front */}
+      {sitting && (
+        <g>
+          <path
+            d="M34 76 Q22 94 20 110 Q19 124 34 124 L66 124 Q81 124 80 110 Q78 94 66 76 Z"
+            fill={bodyFill}
+            stroke={OUTLINE}
+            stroke-width="3.5"
+            stroke-linejoin="round"
+          />
+          <ellipse cx="27" cy="119" rx="8.5" ry="6" fill={bodyFill} stroke={OUTLINE} stroke-width="3" />
+          <ellipse cx="73" cy="119" rx="8.5" ry="6" fill={bodyFill} stroke={OUTLINE} stroke-width="3" />
+          <rect x="38" y="96" width="9.5" height="28" rx="4.75" fill={bodyFill} stroke={OUTLINE} stroke-width="3" />
+          <rect x="52.5" y="96" width="9.5" height="28" rx="4.75" fill={bodyFill} stroke={OUTLINE} stroke-width="3" />
+          <ellipse cx="42.75" cy="122" rx="6.5" ry="4.5" fill={bodyFill} stroke={OUTLINE} stroke-width="2.5" />
+          <ellipse cx="57.25" cy="122" rx="6.5" ry="4.5" fill={bodyFill} stroke={OUTLINE} stroke-width="2.5" />
+        </g>
+      )}
+      {!sitting && (
+        <rect x={bx} y="74" width={bw} height="46" rx={br} fill={bodyFill} stroke={OUTLINE} stroke-width="3.5" />
+      )}
       {robe && (
         <g>
           {/* two flared panels with tattered hems, parting at the front; sleeves (arms) go on over them */}
@@ -301,35 +392,52 @@ export function Chibi({
           </g>
         </g>
       )}
-      <ellipse
-        cx={50 - armDx}
-        cy="90"
-        rx={muscle ? 9 : 7.5}
-        ry={muscle ? 12.5 : 11}
-        fill={armFill}
-        stroke={OUTLINE}
-        stroke-width="3"
-        transform={`rotate(18 ${50 - armDx} 90)`}
-      />
-      <ellipse
-        cx={50 + armDx}
-        cy="90"
-        rx={muscle ? 9 : 7.5}
-        ry={muscle ? 12.5 : 11}
-        fill={armFill}
-        stroke={OUTLINE}
-        stroke-width="3"
-        transform={`rotate(-18 ${50 + armDx} 90)`}
-      />
-      {tiger && <ellipse cx="50" cy="99" rx="13" ry="11" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
+      {/* stubby arms — a sitting cat's front legs stand in for them */}
+      {!sitting && (
+        <g>
+          <ellipse
+            cx={50 - armDx}
+            cy="90"
+            rx={muscle ? 9 : 7.5}
+            ry={muscle ? 12.5 : 11}
+            fill={armFill}
+            stroke={OUTLINE}
+            stroke-width="3"
+            transform={`rotate(18 ${50 - armDx} 90)`}
+          />
+          <ellipse
+            cx={50 + armDx}
+            cy="90"
+            rx={muscle ? 9 : 7.5}
+            ry={muscle ? 12.5 : 11}
+            fill={armFill}
+            stroke={OUTLINE}
+            stroke-width="3"
+            transform={`rotate(-18 ${50 + armDx} 90)`}
+          />
+        </g>
+      )}
+      {tiger && sitting && <ellipse cx="50" cy="92" rx="13" ry="12" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
+      {tiger && !sitting && <ellipse cx="50" cy="99" rx="13" ry="11" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
       {!tiger && !human && <circle cx="50" cy="99" r="11.5" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
       {rosettes && (
         <g fill={rosettes}>
-          <circle cx="50" cy="83" r="2.5" />
-          <circle cx="33" cy="91" r="3" />
-          <circle cx="67" cy="91" r="3" />
-          <circle cx="35" cy="109" r="2.5" />
-          <circle cx="65" cy="109" r="2.5" />
+          {sitting ? (
+            <g>
+              <circle cx="28" cy="98" r="3" />
+              <circle cx="72" cy="98" r="3" />
+              <circle cx="26" cy="110" r="2.5" />
+              <circle cx="74" cy="110" r="2.5" />
+            </g>
+          ) : (
+            <g>
+              <circle cx="50" cy="83" r="2.5" />
+              <circle cx="33" cy="91" r="3" />
+              <circle cx="67" cy="91" r="3" />
+              <circle cx="35" cy="109" r="2.5" />
+              <circle cx="65" cy="109" r="2.5" />
+            </g>
+          )}
         </g>
       )}
 
@@ -613,15 +721,13 @@ export function Chibi({
 
       {/* tiger detailing */}
       {tiger && (
-        <g>
-          <path
-            d="M22 36 Q28 38 26 45 M78 36 Q72 38 74 45 M45 21 L46 29 M55 21 L54 29"
-            stroke={stripeColor}
-            stroke-width="3.5"
-            fill="none"
-            stroke-linecap="round"
-          />
-          <path d="M30 34 Q36 31 42 34 M58 34 Q64 31 70 34" stroke={stripeColor} stroke-width="2.5" fill="none" stroke-linecap="round" />
+        <g stroke={stripeColor} fill="none" stroke-linecap="round">
+          {/* crown stripes and a dark dot between the brows */}
+          <path d="M44 18 L45 26 M56 18 L55 26" stroke-width="3.5" />
+          <path d="M21 34 Q27 36 25 43 M79 34 Q73 36 75 43" stroke-width="3.5" />
+          {/* angled brows arching over the eyes */}
+          <path d="M24 30 Q35 24 45 29 M76 30 Q65 24 55 29" stroke-width="3" />
+          <circle cx="50" cy="28" r="1.8" fill={stripeColor} stroke="none" />
         </g>
       )}
 
@@ -710,16 +816,29 @@ export function Chibi({
       {bird && <polygon points="44,54 56,54 50,63" fill={beakColor} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />}
       {tiger && (
         <g>
-          {/* fur-colored muzzle, pink nose, goofy grin: tongue, flat teeth, little tusks at the corners */}
-          <ellipse cx="50" cy="59" rx="13" ry="9.5" fill={c} stroke={OUTLINE} stroke-width="2.5" />
-          <path d="M47 55 Q50 58 53 55 Z" fill="#ffb6c1" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
-          <path d="M39 60 Q50 70 61 60" stroke={OUTLINE} stroke-width="2.5" fill="none" stroke-linecap="round" />
-          <path d="M46.5 66 Q50 73 53.5 66 Z" fill="#e53935" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
-          <rect x="45" y="63" width="4" height="4" rx="1" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" />
-          <rect x="51" y="63" width="4" height="4" rx="1" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" />
-          {/* oversized fangs hanging past the jaw */}
+          {/* whiskers first, so the muzzle sits over their roots */}
+          {whiskers && (
+            <path
+              d="M33 58 L12 53 M33 62 L11 62 M33 66 L13 71 M67 58 L88 53 M67 62 L89 62 M67 66 L87 71"
+              stroke={whiskers}
+              stroke-width="1.5"
+              stroke-linecap="round"
+              fill="none"
+              opacity="0.85"
+            />
+          )}
+          {/* muzzle in fur colour, pink nose, wide jagged grin */}
+          <ellipse cx="50" cy="63" rx="15" ry="10" fill={c} stroke={OUTLINE} stroke-width="2.5" />
+          <path d="M45.5 55 Q50 60 54.5 55 Z" fill={noseColor} stroke={OUTLINE} stroke-width="1.6" stroke-linejoin="round" />
+          <path d="M37 61 Q50 77 63 61 Z" fill="#3a1030" stroke={OUTLINE} stroke-width="2" stroke-linejoin="round" />
+          {/* a row of pointed teeth along the upper lip… */}
           <path
-            d="M38.5 60 L42 72 L45.5 60.5 Z M54.5 60.5 L58 72 L61.5 60 Z"
+            d="M38 61 L41 66.5 L44 61 L47 66.5 L50 61 L53 66.5 L56 61 L59 66.5 L62 61 Z"
+            fill="#ffffff"
+          />
+          {/* …and the two oversized canines, splaying out at roughly 45° */}
+          <path
+            d="M36.5 59 L32 69.5 L43 60.5 Z M63.5 59 L68 69.5 L57 60.5 Z"
             fill="#ffffff"
             stroke={OUTLINE}
             stroke-width="1.6"
@@ -894,6 +1013,12 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       hypnoEyes={sticker.hypnoEyes}
       crossEyes={sticker.crossEyes}
       stripeColor={sticker.stripeColor}
+      eyeRim={sticker.eyeRim}
+      eyeSize={sticker.eyeSize}
+      whiskers={sticker.whiskers}
+      noseColor={sticker.noseColor}
+      sitting={sticker.sitting}
+      flowerpot={sticker.flowerpot}
       wideEyes={sticker.wideEyes}
       earInner={sticker.earInner}
       rosettes={sticker.rosettes}
