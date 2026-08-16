@@ -60,6 +60,8 @@ export interface ChibiProps {
   eyeColor?: string;
   sclera?: string;
   hypnoEyes?: boolean;
+  crossEyes?: boolean;
+  stripeColor?: string;
   wideEyes?: boolean;
   earInner?: string;
   rosettes?: string;
@@ -116,6 +118,8 @@ export function Chibi({
   eyeColor,
   sclera,
   hypnoEyes = false,
+  crossEyes = false,
+  stripeColor = "#111111",
   wideEyes = false,
   earInner,
   rosettes,
@@ -167,15 +171,20 @@ export function Chibi({
   const eyeCy = wideEyes ? 47 : 49;
   // Eye anatomy: solid dark by default; `eyeColor` adds an iris; `sclera` adds
   // an eye-white with a soft glow and shrinks the iris to a ring inside it;
-  // `hypnoEyes` replaces the iris with a spiral coiling out from the pupil.
-  const eye = (cx: number) => {
+  // `hypnoEyes` replaces the iris with a spiral coiling out from the pupil;
+  // `crossEyes` pulls both pupils toward the nose, each off by a different
+  // amount so the gaze reads as uncoordinated rather than merely crossed.
+  // `drift` is the inward nudge for the pupil: +x for the left eye, −x for the right.
+  const eye = (cx: number, drift = 0, dy = 0) => {
     const irisR = sclera ? eyeR * 0.62 : eyeR;
-    const pupilR = hypnoEyes ? 1.6 : sclera ? eyeR * 0.3 : eyeColor ? eyeR * 0.5 : eyeR;
+    const pupilR = hypnoEyes ? 1.6 : sclera ? eyeR * 0.34 : eyeColor ? eyeR * 0.5 : eyeR;
+    const px = cx + (crossEyes ? drift : 0);
+    const py = eyeCy + (crossEyes ? dy : 0);
     return (
       <g>
         {sclera && <circle cx={cx} cy={eyeCy} r={eyeR + 2.5} fill={sclera} opacity="0.35" />}
         {sclera && <circle cx={cx} cy={eyeCy} r={eyeR} fill={sclera} stroke={OUTLINE} stroke-width="2" />}
-        {eyeColor && !hypnoEyes && <circle cx={cx} cy={eyeCy} r={irisR} fill={eyeColor} />}
+        {eyeColor && !hypnoEyes && <circle cx={px} cy={py} r={irisR} fill={eyeColor} />}
         {hypnoEyes && (
           // Half-circle arcs of growing radius = a compass spiral, ~6 units across.
           <path
@@ -188,12 +197,17 @@ export function Chibi({
           />
         )}
         {slitPupils ? (
-          <ellipse cx={cx} cy={eyeCy} rx="1.6" ry={eyeR * 0.72} fill={OUTLINE} />
+          <ellipse cx={px} cy={py} rx="1.6" ry={eyeR * 0.72} fill={OUTLINE} />
         ) : (
-          <circle cx={cx} cy={eyeCy} r={pupilR} fill={OUTLINE} />
+          <circle cx={px} cy={py} r={pupilR} fill={OUTLINE} />
         )}
-        {!hypnoEyes && !slitPupils && <circle cx={cx - 3} cy={eyeCy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />}
-        <circle cx={cx + 3} cy={eyeCy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
+        {/* a big catchlight fills a solid dark eye; against a coloured sclera it
+            would read as a second eyeball, so there it shrinks into the pupil */}
+        {!hypnoEyes && !slitPupils && !sclera && (
+          <circle cx={px - 3} cy={py - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />
+        )}
+        {!hypnoEyes && !slitPupils && sclera && <circle cx={px - 1.3} cy={py - 1.3} r="1.2" fill="#ffffff" />}
+        <circle cx={px + 3} cy={py + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
       </g>
     );
   };
@@ -230,7 +244,7 @@ export function Chibi({
       {tiger && (
         <g>
           <path d="M72 114 Q88 112 85 98" stroke={c} stroke-width="7" fill="none" stroke-linecap="round" />
-          <path d="M80 111 L85 108 M83 104 L87 102" stroke="#111111" stroke-width="3" stroke-linecap="round" />
+          <path d="M80 111 L85 108 M83 104 L87 102" stroke={stripeColor} stroke-width="3" stroke-linecap="round" />
         </g>
       )}
       {/* long pigtails hang behind the shoulders; the roots tuck under the head, ties go on later */}
@@ -602,12 +616,12 @@ export function Chibi({
         <g>
           <path
             d="M22 36 Q28 38 26 45 M78 36 Q72 38 74 45 M45 21 L46 29 M55 21 L54 29"
-            stroke="#111111"
+            stroke={stripeColor}
             stroke-width="3.5"
             fill="none"
             stroke-linecap="round"
           />
-          <path d="M30 34 Q36 31 42 34 M58 34 Q64 31 70 34" stroke="#111111" stroke-width="2.5" fill="none" stroke-linecap="round" />
+          <path d="M30 34 Q36 31 42 34 M58 34 Q64 31 70 34" stroke={stripeColor} stroke-width="2.5" fill="none" stroke-linecap="round" />
         </g>
       )}
 
@@ -623,8 +637,8 @@ export function Chibi({
       {/* big glossy eyes */}
       {!derp && !tripleEyes && (
         <g>
-          {eye(36)}
-          {!wink && eye(64)}
+          {eye(36, 3.2, -0.8)}
+          {!wink && eye(64, -2.4, 1.1)}
           {wink && <path d="M58 47 Q64 52 70 47" stroke={OUTLINE} stroke-width="3" fill="none" stroke-linecap="round" />}
         </g>
       )}
@@ -703,7 +717,14 @@ export function Chibi({
           <path d="M46.5 66 Q50 73 53.5 66 Z" fill="#e53935" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
           <rect x="45" y="63" width="4" height="4" rx="1" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" />
           <rect x="51" y="63" width="4" height="4" rx="1" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" />
-          <path d="M40 61 L42.5 66.5 L45 61.5 Z M55 61.5 L57.5 66.5 L60 61 Z" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" stroke-linejoin="round" />
+          {/* oversized fangs hanging past the jaw */}
+          <path
+            d="M38.5 60 L42 72 L45.5 60.5 Z M54.5 60.5 L58 72 L61.5 60 Z"
+            fill="#ffffff"
+            stroke={OUTLINE}
+            stroke-width="1.6"
+            stroke-linejoin="round"
+          />
         </g>
       )}
       {derp && <path d="M46 61 Q50 70 54 61 Z" fill="#ff5fa2" stroke={OUTLINE} stroke-width="2" />}
@@ -871,6 +892,8 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       eyeColor={sticker.eyeColor}
       sclera={sticker.sclera}
       hypnoEyes={sticker.hypnoEyes}
+      crossEyes={sticker.crossEyes}
+      stripeColor={sticker.stripeColor}
       wideEyes={sticker.wideEyes}
       earInner={sticker.earInner}
       rosettes={sticker.rosettes}

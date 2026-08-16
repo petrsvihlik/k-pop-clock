@@ -139,6 +139,10 @@ export interface Sticker {
   sclera?: string;
   /** Hypnotized: a spiral in the iris color coils out from the pupil (needs `sclera`). */
   hypnoEyes?: boolean;
+  /** Goofy cross-eyed gaze: both pupils pull toward the nose, slightly mismatched. */
+  crossEyes?: boolean;
+  /** Stripe / whisker-marking color for the tiger spirit. */
+  stripeColor?: string;
   /** Extra-big round eyes. */
   wideEyes?: boolean;
   /** Inner-ear color for round ears (default: soft cream). */
@@ -206,18 +210,18 @@ export const STICKERS: readonly Sticker[] = [
   {
     id: "derpy",
     name: "Derpy",
-    color: "#2a85ff",
+    color: "#7ec8e3",
     ears: "soft",
     acc: "none",
     tiger: true,
-    outfit: "#2a85ff",
+    outfit: "#7ec8e3",
     accent: "#ffffff",
-    rosettes: "#4da6ff",
-    earInner: "#ffb6c1",
-    sclera: "#ffeb3b",
-    eyeColor: "#f44336",
+    rosettes: "#2a4365",
+    stripeColor: "#2a4365",
+    earInner: "#f472b6",
+    sclera: "#fde047",
     wideEyes: true,
-    hypnoEyes: true,
+    crossEyes: true,
     voice: { pitch: 0.75, rate: 0.85, prefer: "male" },
   },
   {
