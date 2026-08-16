@@ -246,8 +246,8 @@ export function Chibi({
       {/* hair (humans): under-shapes first, then the fringed cap, then side pieces */}
       {human && hair === "buns" && (
         <g>
-          <circle cx="21" cy="13" r="8" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
-          <circle cx="79" cy="13" r="8" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          <circle cx="25" cy="18" r="8" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          <circle cx="75" cy="18" r="8" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
         </g>
       )}
       {human && hair === "fluffy" && (
@@ -259,7 +259,9 @@ export function Chibi({
       )}
       {human && (
         <path
-          d="M17.5 46 A33 30 0 0 1 82.5 46 Q76 37 66 39 Q58 33 50 35 Q42 33 34 39 Q24 37 17.5 46 Z"
+          // Arc = the head ellipse (50,46 r33x30) grown by ~1 for volume, spanning
+          // its full width so the arc's center coincides with the head's.
+          d="M16 46 A34 31.5 0 0 1 84 46 Q76 37 66 39 Q58 33 50 35 Q42 33 34 39 Q24 37 16 46 Z"
           fill={hairColor}
           stroke={OUTLINE}
           stroke-width="3"
