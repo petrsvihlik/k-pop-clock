@@ -37,6 +37,12 @@ export interface ChibiProps {
   skirt?: string;
   boots?: string;
   gokdo?: boolean;
+  argyle?: string;
+  collar?: string;
+  cap?: string;
+  neonNails?: boolean;
+  makeup?: string;
+  necklace?: string;
   jacket?: boolean;
   hoodie?: boolean;
   heart?: boolean;
@@ -49,7 +55,7 @@ export interface ChibiProps {
   tiger?: boolean;
   eyeColor?: string;
   sclera?: string;
-  crazyEyes?: boolean;
+  hypnoEyes?: boolean;
   wideEyes?: boolean;
   earInner?: string;
   rosettes?: string;
@@ -83,6 +89,12 @@ export function Chibi({
   skirt,
   boots,
   gokdo = false,
+  argyle,
+  collar,
+  cap,
+  neonNails = false,
+  makeup,
+  necklace,
   jacket = false,
   hoodie = false,
   heart = false,
@@ -95,7 +107,7 @@ export function Chibi({
   tiger = false,
   eyeColor,
   sclera,
-  crazyEyes = false,
+  hypnoEyes = false,
   wideEyes = false,
   earInner,
   rosettes,
@@ -127,21 +139,30 @@ export function Chibi({
   const eyeR = wideEyes ? 10.5 : 8;
   const eyeCy = wideEyes ? 47 : 49;
   // Eye anatomy: solid dark by default; `eyeColor` adds an iris; `sclera` adds
-  // an eye-white with a soft glow and shrinks the iris to a ring inside it.
-  // `crazyEyes` lets each pupil wander a different way (side: -1 left, 1 right).
-  const eye = (cx: number, side: -1 | 1) => {
-    const dx = crazyEyes ? side * 2.2 : 0;
-    const dy = crazyEyes ? (side < 0 ? -2 : 2.5) : 0;
+  // an eye-white with a soft glow and shrinks the iris to a ring inside it;
+  // `hypnoEyes` replaces the iris with a spiral coiling out from the pupil.
+  const eye = (cx: number) => {
     const irisR = sclera ? eyeR * 0.62 : eyeR;
-    const pupilR = sclera ? eyeR * 0.3 : eyeColor ? eyeR * 0.5 : eyeR;
+    const pupilR = hypnoEyes ? 1.6 : sclera ? eyeR * 0.3 : eyeColor ? eyeR * 0.5 : eyeR;
     return (
       <g>
         {sclera && <circle cx={cx} cy={eyeCy} r={eyeR + 2.5} fill={sclera} opacity="0.35" />}
         {sclera && <circle cx={cx} cy={eyeCy} r={eyeR} fill={sclera} stroke={OUTLINE} stroke-width="2" />}
-        {eyeColor && <circle cx={cx + dx} cy={eyeCy + dy} r={irisR} fill={eyeColor} />}
-        <circle cx={cx + dx} cy={eyeCy + dy} r={pupilR} fill={OUTLINE} />
-        <circle cx={cx + dx - 3} cy={eyeCy + dy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />
-        <circle cx={cx + dx + 3} cy={eyeCy + dy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
+        {eyeColor && !hypnoEyes && <circle cx={cx} cy={eyeCy} r={irisR} fill={eyeColor} />}
+        {hypnoEyes && (
+          // Half-circle arcs of growing radius = a compass spiral, ~6 units across.
+          <path
+            d="M0 0 a1 1 0 0 1 2 0 a2 2 0 0 1 -4 0 a3 3 0 0 1 6 0 a4 4 0 0 1 -8 0 a5 5 0 0 1 10 0 a6 6 0 0 1 -12 0"
+            transform={`translate(${cx} ${eyeCy})`}
+            stroke={eyeColor ?? OUTLINE}
+            stroke-width="2.2"
+            stroke-linecap="round"
+            fill="none"
+          />
+        )}
+        <circle cx={cx} cy={eyeCy} r={pupilR} fill={OUTLINE} />
+        {!hypnoEyes && <circle cx={cx - 3} cy={eyeCy - 3.5} r={wideEyes ? 3.5 : 3} fill="#ffffff" />}
+        <circle cx={cx + 3} cy={eyeCy + 4} r={wideEyes ? 1.9 : 1.6} fill="#ffffff" opacity="0.95" />
       </g>
     );
   };
@@ -162,6 +183,15 @@ export function Chibi({
           <circle cx="77" cy="17" r="10" fill={c} stroke={OUTLINE} stroke-width="4" />
           <circle cx="23" cy="17" r="4.5" fill={earInner ?? CREAM} opacity={earInner ? 0.9 : 0.55} />
           <circle cx="77" cy="17" r="4.5" fill={earInner ?? CREAM} opacity={earInner ? 0.9 : 0.55} />
+        </g>
+      )}
+      {!human && ears === "soft" && (
+        <g stroke-linejoin="round">
+          {/* rounded triangles: cubic curves keep every edge soft; bases tuck under the head */}
+          <path d="M20 31 C15 23 17 13 26 10 C34 12 37 19 35 26 Z" fill={c} stroke={OUTLINE} stroke-width="3.5" />
+          <path d="M80 31 C85 23 83 13 74 10 C66 12 63 19 65 26 Z" fill={c} stroke={OUTLINE} stroke-width="3.5" />
+          <path d="M23.5 26 C21.5 20 22.5 15 26 13 C30 14 32 18 31 23 Z" fill={earInner ?? CREAM} opacity={earInner ? 0.9 : 0.55} />
+          <path d="M76.5 26 C78.5 20 77.5 15 74 13 C70 14 68 18 69 23 Z" fill={earInner ?? CREAM} opacity={earInner ? 0.9 : 0.55} />
         </g>
       )}
 
@@ -286,6 +316,47 @@ export function Chibi({
           <rect x="59" y="74" width="14" height="34" rx="7" fill={openJacket} stroke={OUTLINE} stroke-width="2.5" />
         </g>
       )}
+      {argyle && (
+        <g>
+          {/* a row of diamonds across the chest and two staggered below, threaded by thin diagonals */}
+          <path d="M30 86 L70 106 M30 106 L70 86" stroke={argyle} stroke-width="1.2" opacity="0.7" />
+          <g fill={argyle}>
+            <path d="M38 88 L43.5 96 L38 104 L32.5 96 Z" />
+            <path d="M50 88 L55.5 96 L50 104 L44.5 96 Z" />
+            <path d="M62 88 L67.5 96 L62 104 L56.5 96 Z" />
+            <path d="M44 104 L48.5 111 L44 118 L39.5 111 Z" />
+            <path d="M56 104 L60.5 111 L56 118 L51.5 111 Z" />
+          </g>
+        </g>
+      )}
+      {collar && (
+        <g>
+          {/* shirt in the V of the neckline, with two collar points folded over it */}
+          <path d="M40 75 L50 88 L60 75 Z" fill={collar} />
+          <path d="M40 75 L46.5 84.5 L50 79.5 Z M60 75 L53.5 84.5 L50 79.5 Z" fill={collar} stroke="#5b5bc0" stroke-width="1.5" stroke-linejoin="round" />
+        </g>
+      )}
+      {necklace && (
+        <g>
+          {/* chunky chain (dashed silver over a dark base) and an open diamond pendant with a crystal */}
+          <path d="M40 75 Q50 92 60 75" stroke={OUTLINE} stroke-width="4.5" fill="none" stroke-linecap="round" />
+          <path d="M40 75 Q50 92 60 75" stroke="#c9d1e0" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 1.6" />
+          <path d="M50 83 L55 89 L50 95 L45 89 Z" fill="none" stroke={OUTLINE} stroke-width="4" stroke-linejoin="round" />
+          <path d="M50 83 L55 89 L50 95 L45 89 Z" fill="none" stroke="#c9d1e0" stroke-width="2" stroke-linejoin="round" />
+          <path d="M50 86.5 L52.5 89 L50 91.5 L47.5 89 Z" fill={necklace} stroke={OUTLINE} stroke-width="1" stroke-linejoin="round" />
+        </g>
+      )}
+      {neonNails && (
+        <g>
+          {/* three tiny polish dots on each fingertip: a different neon per nail */}
+          <circle cx="23.5" cy="101" r="1.4" fill="#39ff14" />
+          <circle cx="25.6" cy="102.2" r="1.4" fill="#ff10f0" />
+          <circle cx="27.7" cy="101" r="1.4" fill="#00f0ff" />
+          <circle cx="72.3" cy="101" r="1.4" fill="#ff10f0" />
+          <circle cx="74.4" cy="102.2" r="1.4" fill="#00f0ff" />
+          <circle cx="76.5" cy="101" r="1.4" fill="#39ff14" />
+        </g>
+      )}
       {jacket && (
         <g>
           <polygon points="35,76 46,76 35,92" fill="#120d1d" />
@@ -373,6 +444,16 @@ export function Chibi({
           <circle cx="82.5" cy="40" r="4" fill="#ffcf5c" stroke={OUTLINE} stroke-width="2.5" />
         </g>
       )}
+      {human && hair === "mop" && (
+        <g>
+          {/* fluffy tufts at the temples and a messy fringe, on top of the cap so their curves read as volume */}
+          <circle cx="22" cy="32" r="6.5" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          <circle cx="78" cy="32" r="6.5" fill={hairColor} stroke={OUTLINE} stroke-width="3" />
+          <circle cx="37" cy="38" r="4" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="50" cy="40" r="4" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="63" cy="38" r="4" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
+        </g>
+      )}
       {human && hair === "bob" && (
         <g>
           <path d="M17.5 44 Q14 60 20 68 Q27 62 25 46 Z" fill={hairColor} stroke={OUTLINE} stroke-width="3" stroke-linejoin="round" />
@@ -392,6 +473,16 @@ export function Chibi({
           <circle cx="85" cy="80" r="5.5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
           <circle cx="86" cy="92" r="5" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" />
           <circle cx="86.5" cy="100" r="3" fill="#ffcf5c" stroke={OUTLINE} stroke-width="2" />
+        </g>
+      )}
+
+      {/* tilted newsboy/beret cap: soft dome dipping to the right, short peak under the low side, top button */}
+      {cap && (
+        <g>
+          <ellipse cx="50" cy="21" rx="28" ry="11" fill={cap} stroke={OUTLINE} stroke-width="3" transform="rotate(10 50 21)" />
+          <path d="M31 21 Q49 9 68 20" stroke="#d9b23a" stroke-width="1.5" fill="none" stroke-linecap="round" transform="rotate(10 50 21)" />
+          <path d="M50 32.5 Q68 39 84 30.5 Q68 34 50 32.5 Z" fill="#d9b23a" stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+          <circle cx="47" cy="10.5" r="2.2" fill={OUTLINE} />
         </g>
       )}
 
@@ -452,11 +543,20 @@ export function Chibi({
         </g>
       )}
 
+      {/* stage makeup: eyeshadow sweeps above each eye, glitter star on the cheek */}
+      {makeup && (
+        <g>
+          <ellipse cx="36" cy="41.5" rx="7.5" ry="2.8" fill={makeup} opacity="0.4" />
+          <ellipse cx="64" cy="41.5" rx="7.5" ry="2.8" fill={makeup} opacity="0.4" />
+          <path d="M71 53 L72 56 L75 57 L72 58 L71 61 L70 58 L67 57 L70 56 Z" fill="#ffb6c1" stroke={OUTLINE} stroke-width="1" stroke-linejoin="round" />
+        </g>
+      )}
+
       {/* big glossy eyes */}
       {!derp && !tripleEyes && (
         <g>
-          {eye(36, -1)}
-          {!wink && eye(64, 1)}
+          {eye(36)}
+          {!wink && eye(64)}
           {wink && <path d="M58 47 Q64 52 70 47" stroke={OUTLINE} stroke-width="3" fill="none" stroke-linecap="round" />}
         </g>
       )}
@@ -653,6 +753,12 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       skirt={sticker.skirt}
       boots={sticker.boots}
       gokdo={sticker.gokdo}
+      argyle={sticker.argyle}
+      collar={sticker.collar}
+      cap={sticker.cap}
+      neonNails={sticker.neonNails}
+      makeup={sticker.makeup}
+      necklace={sticker.necklace}
       jacket={sticker.jacket}
       hoodie={sticker.hoodie}
       heart={sticker.heart}
@@ -665,7 +771,7 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       tiger={sticker.tiger}
       eyeColor={sticker.eyeColor}
       sclera={sticker.sclera}
-      crazyEyes={sticker.crazyEyes}
+      hypnoEyes={sticker.hypnoEyes}
       wideEyes={sticker.wideEyes}
       earInner={sticker.earInner}
       rosettes={sticker.rosettes}

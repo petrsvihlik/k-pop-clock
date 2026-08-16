@@ -29,9 +29,10 @@ export const ISLANDS: readonly Island[] = [
   { id: "set", color: "#5ca8ff", type: "set" },
 ];
 
-export type Ears = "cat" | "round" | "none";
+/** cat = pointed, round = discs, soft = rounded triangles with soft edges. */
+export type Ears = "cat" | "round" | "soft" | "none";
 export type Accessory = "mic" | "bolt" | "band" | "star" | "none";
-export type Hair = "braid" | "bob" | "buns" | "braidBuns" | "crop" | "curtain" | "fluffy" | "pigtails";
+export type Hair = "braid" | "bob" | "buns" | "braidBuns" | "crop" | "curtain" | "fluffy" | "mop" | "pigtails";
 
 export interface Sticker {
   id: string;
@@ -76,6 +77,18 @@ export interface Sticker {
   boots?: string;
   /** Gok-do — a curved-blade polearm held at the right side. */
   gokdo?: boolean;
+  /** Argyle diamonds + crossing lines on the outfit, in this accent color. */
+  argyle?: string;
+  /** Collared dress shirt showing at the neckline, in this color. */
+  collar?: string;
+  /** Tilted newsboy/beret cap in this color. */
+  cap?: string;
+  /** Neon nail polish dots on the fingertips. */
+  neonNails?: boolean;
+  /** Stage makeup: eyeshadow in this color + a glitter star on the cheek. */
+  makeup?: string;
+  /** Chunky silver chain with an open diamond pendant; the crystal inside takes this color. */
+  necklace?: string;
   /** Leather jacket: lapels, zipper, utility strap. */
   jacket?: boolean;
   /** Hoodie drawstrings + big chest star. */
@@ -105,8 +118,8 @@ export interface Sticker {
   eyeColor?: string;
   /** Eye-white color; when set the iris shrinks to a ring inside it and the eye glows softly. */
   sclera?: string;
-  /** Unfocused: each pupil drifts a different way. */
-  crazyEyes?: boolean;
+  /** Hypnotized: a spiral in the iris color coils out from the pupil (needs `sclera`). */
+  hypnoEyes?: boolean;
   /** Extra-big round eyes. */
   wideEyes?: boolean;
   /** Inner-ear color for round ears (default: soft cream). */
@@ -135,6 +148,7 @@ export const STICKERS: readonly Sticker[] = [
     shirt: "#ffffff",
     openJacket: "#ffcf5c",
     shorts: "#4a7fd4",
+    necklace: "#8b6fc9",
     marks: true,
   },
   {
@@ -170,7 +184,7 @@ export const STICKERS: readonly Sticker[] = [
     id: "derpy",
     name: "Derpy",
     color: "#2a85ff",
-    ears: "round",
+    ears: "soft",
     acc: "none",
     tiger: true,
     outfit: "#2a85ff",
@@ -180,7 +194,7 @@ export const STICKERS: readonly Sticker[] = [
     sclera: "#ffeb3b",
     eyeColor: "#f44336",
     wideEyes: true,
-    crazyEyes: true,
+    hypnoEyes: true,
   },
   {
     id: "sussie",
@@ -235,15 +249,19 @@ export const STICKERS: readonly Sticker[] = [
     wink: true,
   },
   {
-    id: "mini",
-    name: "Mini",
-    color: "#f9a8d4",
+    id: "saja",
+    name: "Baby Saja",
+    color: "#40e0d0",
     ears: "none",
     acc: "none",
     skin: "#ffe9d6",
-    hair: "fluffy",
-    hairColor: "#c4b5fd",
-    outfit: "#fbcfe8",
-    heart: true,
+    hair: "mop",
+    hairColor: "#40e0d0",
+    outfit: "#ff69b4",
+    argyle: "#ffb6c1",
+    collar: "#000080",
+    cap: "#ffdb58",
+    neonNails: true,
+    makeup: "#ff69b4",
   },
 ];
