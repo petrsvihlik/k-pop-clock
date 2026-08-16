@@ -610,9 +610,9 @@ export function Chibi({
       {bird && <polygon points="44,54 56,54 50,63" fill={beakColor} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />}
       {tiger && (
         <g>
-          {/* white muzzle, red nose, goofy grin: tongue, flat teeth, little tusks at the corners */}
-          <ellipse cx="50" cy="59" rx="13" ry="9.5" fill="#ffffff" stroke={OUTLINE} stroke-width="2.5" />
-          <path d="M47 55 Q50 58 53 55 Z" fill="#e53935" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
+          {/* fur-colored muzzle, pink nose, goofy grin: tongue, flat teeth, little tusks at the corners */}
+          <ellipse cx="50" cy="59" rx="13" ry="9.5" fill={c} stroke={OUTLINE} stroke-width="2.5" />
+          <path d="M47 55 Q50 58 53 55 Z" fill="#ffb6c1" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
           <path d="M39 60 Q50 70 61 60" stroke={OUTLINE} stroke-width="2.5" fill="none" stroke-linecap="round" />
           <path d="M46.5 66 Q50 73 53.5 66 Z" fill="#e53935" stroke={OUTLINE} stroke-width="1.5" stroke-linejoin="round" />
           <rect x="45" y="63" width="4" height="4" rx="1" fill="#ffffff" stroke={OUTLINE} stroke-width="1.2" />
