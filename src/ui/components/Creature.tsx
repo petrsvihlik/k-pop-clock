@@ -900,6 +900,9 @@ export interface CreatureProps {
  * with the white shoulder patch, white belly, forward beak. Keeps the band's
  * eye language (stacked yellow eyes) and the hat, but on a bird silhouette.
  */
+/** Sussie's neck: a tapered column running from inside the body up to the head. */
+const NECK_D = "M32 96 Q38 68 49 43 L65 46 Q60 74 60 102 Z";
+
 function MagpieProfile({ sticker, width = 104, height = 137 }: CreatureProps) {
   const c = sticker.color;
   const dark = "#1f2a52";
@@ -927,22 +930,27 @@ function MagpieProfile({ sticker, width = 104, height = 137 }: CreatureProps) {
         <path d="M30 128.5 L36 127 L36 130.5 M36 127 L42 128.5 M41 128.5 L47 127 L47 130.5 M47 127 L53 128.5" stroke-width="2.5" />
       </g>
 
-      {/* neck: one tapered column from the body up to the head, drawn first so
-          the body and head close over its ends and the join reads seamless */}
-      <path d="M32 96 Q38 68 49 43 L65 46 Q60 74 60 102 Z" fill={c} stroke={OUTLINE} stroke-width="3" stroke-linejoin="round" />
+      {/* head and neck as one silhouette: outline both, then repaint their fills
+          so the shared edge is covered and only the outer contour keeps a line */}
+      <g>
+        <path d={NECK_D} fill={c} stroke={OUTLINE} stroke-width="3" stroke-linejoin="round" />
+        <ellipse cx="58" cy="37" rx="15" ry="13" fill={c} stroke={OUTLINE} stroke-width="3" />
+        <path d={NECK_D} fill={c} />
+        <ellipse cx="58" cy="37" rx="15" ry="13" fill={c} />
+      </g>
+      <ellipse cx="52" cy="29" rx="6" ry="3.5" fill={sheen} opacity="0.3" transform="rotate(-25 52 29)" />
 
-      {/* body and belly */}
+      {/* body closes over the foot of the neck, so that join is seamless too */}
       <ellipse cx="42" cy="103" rx="26" ry="20" fill={c} stroke={OUTLINE} stroke-width="3" />
+      {/* belly patch drawn as a target: white field, dark ring, dark bullseye */}
       <ellipse cx="50" cy="108" rx="15" ry="12" fill={belly} />
+      <ellipse cx="50" cy="108" rx="9" ry="7.2" fill="none" stroke={OUTLINE} stroke-width="2.5" />
+      <ellipse cx="50" cy="108" rx="3.2" ry="2.6" fill={OUTLINE} />
 
       {/* folded wing along the back, white shoulder patch, iridescent sheen */}
       <path d="M40 90 Q20 96 16 114 Q30 110 50 94 Z" fill={dark} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
       <ellipse cx="38" cy="93" rx="5" ry="3.5" fill={belly} />
       <path d="M34 98 Q24 104 21 111" stroke={sheen} stroke-width="2" stroke-linecap="round" fill="none" opacity="0.35" />
-
-      {/* head — small and slim, riding on top of the neck */}
-      <ellipse cx="58" cy="37" rx="15" ry="13" fill={c} stroke={OUTLINE} stroke-width="3" />
-      <ellipse cx="52" cy="29" rx="6" ry="3.5" fill={sheen} opacity="0.3" transform="rotate(-25 52 29)" />
 
       {/* beak pointing forward */}
       <polygon points="70,32 92,38 70,44" fill={beak} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
@@ -956,7 +964,6 @@ function MagpieProfile({ sticker, width = 104, height = 137 }: CreatureProps) {
           <circle cx={cx - 0.4} cy={cy - 1.4} r="0.9" fill="#ffffff" />
         </g>
       ))}
-      <ellipse cx="49" cy="45" rx="3.5" ry="2.2" fill="#d9267b" opacity="0.45" />
 
       {/* hat: flat brim, taller tapered crown */}
       {sticker.topHat && (
