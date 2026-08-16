@@ -70,7 +70,7 @@ const SAVE_KEY = "timeislands_v1";
 const CONFETTI_COLORS = ["#ff5fa2", "#4fd8e8", "#ffcf5c", "#7ee081", "#a78bfa", "#ff9d5c"];
 
 /** Order in which band members join, one per finished level with more to give. */
-const JOIN_ORDER = ["rumi", "mira", "zoey", "derpy", "sussie", "juju", "han", "romeo", "saja"];
+const JOIN_ORDER = ["rumi", "mira", "zoey", "derpy", "sussie", "jinu", "saja"];
 
 /** Sticker ids that were renamed; saves made under the old id are migrated on load. */
 const RENAMED_IDS: Record<string, string> = {
@@ -80,6 +80,7 @@ const RENAMED_IDS: Record<string, string> = {
   tiger: "derpy",
   magpie: "sussie",
   mini: "saja",
+  han: "jinu",
 };
 
 export class TimeIslandsGame {
