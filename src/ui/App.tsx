@@ -7,6 +7,7 @@ import { StickerScreen } from "@ui/screens/StickerScreen.tsx";
 import { CompleteOverlay } from "@ui/screens/CompleteOverlay.tsx";
 import { SandboxScreen } from "@ui/screens/SandboxScreen.tsx";
 import { IntroScreen } from "@ui/screens/IntroScreen.tsx";
+import { UpdateBanner } from "@ui/components/UpdateBanner.tsx";
 
 export function App({ game }: { game: TimeIslandsGame }) {
   const state = useStore(game.store);
@@ -20,6 +21,7 @@ export function App({ game }: { game: TimeIslandsGame }) {
       {state.screen === "sandbox" && <SandboxScreen game={game} state={state} />}
       {state.screen === "intro" && <IntroScreen game={game} state={state} />}
       {state.showComplete && <CompleteOverlay game={game} state={state} />}
+      <UpdateBanner lang={state.lang} />
     </div>
   );
 }

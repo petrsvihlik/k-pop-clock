@@ -119,6 +119,13 @@ export class TimeIslandsGame {
   private readonly speech: Speech;
   private drag: "hour" | "minute" | null = null;
   private dragTarget: "set" | "sandbox" = "set";
+  /**
+   * Bumped whenever a level is left or restarted. Delayed callbacks (the pause
+   * after a correct answer, the matching board's refill) capture the value and
+   * bail if it changed, so a timer from an abandoned level can never hand out a
+   * question or raise the completion overlay on another screen.
+   */
+  private session = 0;
 
   constructor(config: GameplayConfig = DEFAULT_CONFIG) {
     this.config = config;
@@ -178,6 +185,11 @@ export class TimeIslandsGame {
     return STR[this.s.lang];
   }
 
+  /** Invalidate pending level callbacks and return the new session token. */
+  private endSession(): number {
+    return ++this.session;
+  }
+
   total(): number {
     const n = this.config.questionsPerLevel;
     return Number.isFinite(n) && n >= 3 ? Math.floor(n) : 8;
@@ -203,6 +215,7 @@ export class TimeIslandsGame {
   setGuide(id: string): void {
     if (!this.ownsSticker(id) || this.s.guide === id) return;
     this.sounds.correct();
+    // set the guide first so the greeting is spoken in the new voice
     this.store.setState({ guide: id }, () => this.save());
     const st = STICKERS.find((x) => x.id === id);
     if (st) this.speak(st.name);
@@ -222,8 +235,9 @@ export class TimeIslandsGame {
     return { h12, m, period, h24 };
   }
 
+  /** Speak in the current language, in the voice of whoever is guiding. */
   speak(text: string): void {
-    this.speech.speak(text, SPEECH_LANG[this.s.lang]);
+    this.speech.speak(text, SPEECH_LANG[this.s.lang], this.guideSticker().voice);
   }
 
   // ---------- navigation ----------
@@ -232,11 +246,13 @@ export class TimeIslandsGame {
   }
 
   goStickers(): void {
+    this.endSession();
     this.sounds.tap();
     this.store.setState({ screen: "stickers" });
   }
 
   goMap(): void {
+    this.endSession();
     this.store.setState({ screen: "map", showComplete: false });
   }
 
@@ -258,6 +274,7 @@ export class TimeIslandsGame {
 
   // ---------- sandbox (free play) ----------
   goSandbox(): void {
+    this.endSession();
     this.sounds.tap();
     const n = this.nowParts();
     this.store.setState({ screen: "sandbox", sbH: n.h12, sbM: n.m, sbPeriod: n.period, sbLive: false });
@@ -294,6 +311,7 @@ export class TimeIslandsGame {
 
   // ---------- intro tutorial ----------
   goIntro(): void {
+    this.endSession();
     this.sounds.tap();
     this.store.setState({ screen: "intro", introStep: 0 }, () => this.speakIntro(0));
   }
@@ -324,6 +342,7 @@ export class TimeIslandsGame {
 
   /** Leave the tutorial for the map, remembering it has been seen. */
   exitIntro(): void {
+    this.endSession();
     this.speech.cancel();
     this.store.setState({ screen: "map", seenIntro: true }, () => this.save());
   }
@@ -361,6 +380,7 @@ export class TimeIslandsGame {
       this.sounds.wrong();
       return;
     }
+    this.endSession();
     this.sounds.tap();
     const g = genQ(i, this.T(), this.s.lang, this.config.handSnap);
     this.store.setState(
@@ -397,7 +417,9 @@ export class TimeIslandsGame {
     this.sounds.correct();
     this.speak(praise);
     this.store.setState({ correct: c, feedback: "correct", feedbackText: praise });
+    const token = this.session;
     setTimeout(() => {
+      if (token !== this.session) return; // the level was left or restarted
       if (c >= this.total()) {
         this.finish();
       } else {
@@ -452,10 +474,15 @@ export class TimeIslandsGame {
       const c = s.correct + 1;
       this.sounds.correct();
       this.store.setState({ cards, sel: -1, correct: c, feedback: null, feedbackText: praise });
+      const token = this.session;
       if (c >= this.total()) {
-        setTimeout(() => this.finish(), 700);
+        setTimeout(() => {
+          if (token === this.session) this.finish();
+        }, 700);
       } else if (cards.every((cc) => cc.matched)) {
-        setTimeout(() => this.store.setState({ cards: board(), sel: -1 }), 700);
+        setTimeout(() => {
+          if (token === this.session) this.store.setState({ cards: board(), sel: -1 });
+        }, 700);
       }
     } else {
       this.store.setState({ sel: -1 });

@@ -43,6 +43,10 @@ export interface Strings {
   guideSet: string;
   /** Completion overlay: start the next island. */
   next: string;
+  /** Update banner: a newer version is deployed. */
+  updateReady: string;
+  /** Update banner / map button: reload onto the newest version. */
+  updateNow: string;
   praise: string[];
   islands: Record<string, string>;
 
@@ -91,6 +95,8 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "Vezmi mě s sebou!",
     guideSet: "Teď tě provázím hrou!",
     next: "Další ostrov",
+    updateReady: "Je tu nová verze hry!",
+    updateNow: "Načíst",
     praise: ["Výborně!", "Paráda!", "Super!", "Skvěle ti to jde!"],
     islands: {
       whole: "Celé hodiny",
@@ -166,6 +172,8 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "Take me with you!",
     guideSet: "I'm your guide now!",
     next: "Next island",
+    updateReady: "A new version is ready!",
+    updateNow: "Reload",
     praise: ["Great job!", "Awesome!", "Super!", "You got it!"],
     islands: {
       whole: "Whole Hours",
@@ -241,6 +249,8 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "¡Llévame contigo!",
     guideSet: "¡Ahora soy tu guía!",
     next: "Siguiente isla",
+    updateReady: "¡Hay una versión nueva!",
+    updateNow: "Recargar",
     praise: ["¡Muy bien!", "¡Genial!", "¡Súper!", "¡Lo lograste!"],
     islands: {
       whole: "Horas en punto",

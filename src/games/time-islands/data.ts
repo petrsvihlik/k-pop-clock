@@ -30,6 +30,8 @@ export const ISLANDS: readonly Island[] = [
 ];
 
 /** cat = pointed, round = discs, soft = rounded triangles with soft edges. */
+import type { VoiceProfile } from "@engine/index.ts";
+
 export type Ears = "cat" | "round" | "soft" | "none";
 export type Accessory = "mic" | "bolt" | "band" | "star" | "none";
 export type Hair = "braid" | "bob" | "buns" | "braidBuns" | "crop" | "curtain" | "fluffy" | "mop" | "pigtails";
@@ -48,6 +50,8 @@ export interface Sticker {
   derp?: boolean;
   /** Belly color override (spirits' furry belly / creatures' badge). */
   accent?: string;
+  /** How this member sounds when guiding the game. */
+  voice?: VoiceProfile;
 
   // Human idols: setting `skin` swaps fur for a face + hair.
   skin?: string;
@@ -165,6 +169,7 @@ export const STICKERS: readonly Sticker[] = [
     shorts: "#4a7fd4",
     necklace: "#8b6fc9",
     marks: "#6ee7ff",
+    voice: { pitch: 1.15, rate: 0.95, prefer: "female" },
   },
   {
     id: "mira",
@@ -180,6 +185,7 @@ export const STICKERS: readonly Sticker[] = [
     boots: "#17102b",
     gokdo: true,
     lids: true,
+    voice: { pitch: 0.95, rate: 0.88, prefer: "female" },
   },
   {
     id: "zoey",
@@ -195,6 +201,7 @@ export const STICKERS: readonly Sticker[] = [
     shortsTrim: "#ffcf5c",
     slim: true,
     shinkal: true,
+    voice: { pitch: 1.4, rate: 1.05, prefer: "female" },
   },
   {
     id: "derpy",
@@ -211,6 +218,7 @@ export const STICKERS: readonly Sticker[] = [
     eyeColor: "#f44336",
     wideEyes: true,
     hypnoEyes: true,
+    voice: { pitch: 0.75, rate: 0.85, prefer: "male" },
   },
   {
     id: "sussie",
@@ -225,6 +233,7 @@ export const STICKERS: readonly Sticker[] = [
     tripleEyes: true,
     eyeColor: "#ffcf5c",
     beakColor: "#17102b",
+    voice: { pitch: 1.7, rate: 1.12 },
   },
   {
     id: "jinu",
@@ -242,6 +251,7 @@ export const STICKERS: readonly Sticker[] = [
     marksGlow: "#4b2e83",
     sclera: "#f3c63f",
     slitPupils: true,
+    voice: { pitch: 0.6, rate: 0.85, prefer: "male" },
   },
   {
     id: "saja",
@@ -258,5 +268,6 @@ export const STICKERS: readonly Sticker[] = [
     cap: "#ffdb58",
     neonNails: true,
     makeup: "#ff69b4",
+    voice: { pitch: 1.55, rate: 1.0, prefer: "male" },
   },
 ];

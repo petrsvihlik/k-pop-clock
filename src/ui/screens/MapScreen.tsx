@@ -1,6 +1,7 @@
 import { ISLANDS, LANGS, STICKERS, STR, type GameState, type Lang } from "@game/index.ts";
 import type { TimeIslandsGame } from "@game/index.ts";
 import { Emblem } from "@ui/components/Emblem.tsx";
+import { reloadForUpdate } from "@engine/index.ts";
 
 const ISLAND_PATH =
   "M30 0 C30 58, 170 59, 170 117 C170 175, 30 175, 30 233 C30 291, 170 292, 170 350 C170 408, 30 409, 30 467 C30 525, 170 525, 170 583 C170 641, 30 642, 30 700";
@@ -55,6 +56,16 @@ export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameS
           style="background:#fff7f0;color:#2a1a4a;border:3px solid #2a1a4a;border-radius:999px;padding:10px 20px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #120a2e"
         >
           {L.stickers} · {stickerCount}
+        </button>
+        {/* on-demand reload, for pulling a fresh release onto an installed copy */}
+        <button
+          onClick={reloadForUpdate}
+          class="press-3"
+          aria-label={L.updateNow}
+          title={L.updateNow}
+          style="background:#2c1b57;color:#fff7f0;border:3px solid #3b2f63;border-radius:999px;padding:10px 16px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #120a2e"
+        >
+          ⟳
         </button>
       </div>
 
