@@ -31,7 +31,7 @@ export const ISLANDS: readonly Island[] = [
 
 export type Ears = "cat" | "round" | "none";
 export type Accessory = "mic" | "bolt" | "band" | "star" | "none";
-export type Hair = "braid" | "bob" | "buns" | "braidBuns" | "crop" | "curtain" | "fluffy";
+export type Hair = "braid" | "bob" | "buns" | "braidBuns" | "crop" | "curtain" | "fluffy" | "pigtails";
 
 export interface Sticker {
   id: string;
@@ -70,6 +70,12 @@ export interface Sticker {
   shortsTrim?: string;
   /** Crop top over a bare midriff (body renders in skin tone). */
   cropTop?: string;
+  /** Flared pleated skirt from the waist down. */
+  skirt?: string;
+  /** High-heeled boots in place of the bare feet. */
+  boots?: string;
+  /** Gok-do — a curved-blade polearm held at the right side. */
+  gokdo?: boolean;
   /** Leather jacket: lapels, zipper, utility strap. */
   jacket?: boolean;
   /** Hoodie drawstrings + big chest star. */
@@ -130,10 +136,12 @@ export const STICKERS: readonly Sticker[] = [
     ears: "none",
     acc: "none",
     skin: "#ffe3d0",
-    hair: "bob",
-    hairColor: "#352454",
-    outfit: "#221c33",
-    jacket: true,
+    hair: "pigtails",
+    hairColor: "#ff5fa2",
+    cropTop: "#17102b",
+    skirt: "#ffcf5c",
+    boots: "#17102b",
+    gokdo: true,
     lids: true,
   },
   {

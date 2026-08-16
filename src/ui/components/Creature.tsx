@@ -33,6 +33,9 @@ export interface ChibiProps {
   shorts?: string;
   shortsTrim?: string;
   cropTop?: string;
+  skirt?: string;
+  boots?: string;
+  gokdo?: boolean;
   jacket?: boolean;
   hoodie?: boolean;
   heart?: boolean;
@@ -73,6 +76,9 @@ export function Chibi({
   shorts,
   shortsTrim,
   cropTop,
+  skirt,
+  boots,
+  gokdo = false,
   jacket = false,
   hoodie = false,
   heart = false,
@@ -152,10 +158,31 @@ export function Chibi({
       {magpie && (
         <polygon points="30,110 36,116 14,128" fill="#1f2a52" stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
       )}
+      {/* long pigtails hang behind the shoulders; the roots tuck under the head, ties go on later */}
+      {human && hair === "pigtails" && (
+        <g>
+          <path d="M20 37 Q6 52 7 78 Q7 100 11 116 Q16 102 15 80 Q14 58 23 44 Z" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+          <path d="M80 37 Q94 52 93 78 Q93 100 89 116 Q84 102 85 80 Q86 58 77 44 Z" fill={hairColor} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+          <path d="M11 62 Q9.5 80 11 100 M89 62 Q90.5 80 89 100" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.3" />
+        </g>
+      )}
 
-      {/* feet peeking out under the body */}
-      <ellipse cx={50 - footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
-      <ellipse cx={50 + footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
+      {/* feet peeking out under the body — or heeled boots, whose shafts hide behind the body */}
+      {!boots && (
+        <g>
+          <ellipse cx={50 - footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
+          <ellipse cx={50 + footDx} cy="120" rx="9" ry="7.5" fill={feetFill} stroke={OUTLINE} stroke-width="3" />
+        </g>
+      )}
+      {boots &&
+        [50 - footDx, 50 + footDx].map((cx, i) => (
+          <g key={`boot-${i}`}>
+            {/* heel spike on the outer side, then the shaft with a patent-leather shine */}
+            <rect x={i === 0 ? cx - 6.5 : cx + 3} y="126" width="3.5" height="4.5" rx="1" fill={boots} stroke={OUTLINE} stroke-width="2" />
+            <rect x={cx - 7} y="108" width="14" height="20" rx="4.5" fill={boots} stroke={OUTLINE} stroke-width="2.5" />
+            <path d={`M${cx - 3} 121.5 L${cx - 3} 125.5`} stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.28" />
+          </g>
+        ))}
 
       {/* chubby body + stubby arms (bigger and bare when muscle) */}
       <rect x={bx} y="74" width={bw} height="46" rx={br} fill={bodyFill} stroke={OUTLINE} stroke-width="3.5" />
@@ -210,6 +237,25 @@ export function Chibi({
           stroke={OUTLINE}
           stroke-width="2.5"
         />
+      )}
+      {skirt && (
+        <g>
+          {/* flares past the torso and its hem dips below the body's bottom edge */}
+          <path
+            d={`M${bx + 2} 101 L${bx - 6} 119 Q50 127 ${bx + bw + 6} 119 L${bx + bw - 2} 101 Z`}
+            fill={skirt}
+            stroke={OUTLINE}
+            stroke-width="2.5"
+            stroke-linejoin="round"
+          />
+          <path
+            d={`M${bx + 13} 103 L${bx + 9} 121 M50 103 L50 123 M${bx + bw - 13} 103 L${bx + bw - 9} 121`}
+            stroke={OUTLINE}
+            stroke-width="1.5"
+            stroke-linecap="round"
+            opacity="0.3"
+          />
+        </g>
       )}
       {openJacket && (
         <g>
@@ -305,6 +351,12 @@ export function Chibi({
           stroke-width="3"
           stroke-linejoin="round"
         />
+      )}
+      {human && hair === "pigtails" && (
+        <g>
+          <circle cx="17.5" cy="40" r="4" fill="#ffcf5c" stroke={OUTLINE} stroke-width="2.5" />
+          <circle cx="82.5" cy="40" r="4" fill="#ffcf5c" stroke={OUTLINE} stroke-width="2.5" />
+        </g>
       )}
       {human && hair === "bob" && (
         <g>
@@ -470,6 +522,16 @@ export function Chibi({
           <rect x="82" y="108" width="4" height="7" rx="1.5" fill={OUTLINE} />
         </g>
       )}
+      {gokdo && (
+        <g>
+          {/* wooden shaft past the right arm, gold ferrule, curved single-edged blade */}
+          <path d="M83 124 L91 30" stroke="#5b3a1e" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M83 124 L91 30" stroke="#8a5a2b" stroke-width="1.2" stroke-linecap="round" opacity="0.6" />
+          <rect x="87.5" y="27" width="7" height="5" rx="1.5" fill="#ffcf5c" stroke={OUTLINE} stroke-width="1.8" transform="rotate(5 91 29.5)" />
+          <path d="M92 28 Q101 16 90 4 Q93 17 89.5 28.5 Z" fill="#dbe4f3" stroke={OUTLINE} stroke-width="2" stroke-linejoin="round" />
+          <path d="M91.5 24 Q95 16 90.5 8" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.7" />
+        </g>
+      )}
     </svg>
   );
 }
@@ -503,6 +565,9 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       shorts={sticker.shorts}
       shortsTrim={sticker.shortsTrim}
       cropTop={sticker.cropTop}
+      skirt={sticker.skirt}
+      boots={sticker.boots}
+      gokdo={sticker.gokdo}
       jacket={sticker.jacket}
       hoodie={sticker.hoodie}
       heart={sticker.heart}
