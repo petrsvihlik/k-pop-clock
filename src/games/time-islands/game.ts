@@ -6,7 +6,8 @@
  * behaviour; the Preact UI is a pure projection of `store.get()` plus calls to
  * these methods. No rendering concerns leak in here.
  */
-import { AudioEngine, LocalSave, Speech, Store, pick } from "@engine/index.ts";
+import { AudioEngine, LocalSave, MusicPlayer, Speech, Store, pick } from "@engine/index.ts";
+import { THEME } from "./music.ts";
 import { DEFAULT_CONFIG, type GameplayConfig } from "./config.ts";
 import { ISLANDS, STICKERS, type Sticker } from "./data.ts";
 import { SPEECH_LANG, STR, type Lang, type Strings } from "./i18n.ts";
@@ -32,6 +33,8 @@ export interface GameState {
   stickers: string[];
   /** Sticker id of the band member guiding the levels and the tutorial. */
   guide: string;
+  /** Background music on/off (persisted). */
+  musicOn: boolean;
   /** Test cheat: every island playable and every band member shown this session (not saved). */
   cheatUnlocked: boolean;
   screen: Screen;
@@ -66,6 +69,7 @@ interface SaveData {
   done: Record<string, boolean>;
   stickers: string[];
   guide: string;
+  musicOn: boolean;
   seenIntro: boolean;
 }
 
@@ -120,6 +124,7 @@ export class TimeIslandsGame {
   private readonly save_: LocalSave<SaveData>;
   private readonly audio = new AudioEngine();
   private readonly sounds = new Sounds(this.audio);
+  private readonly music = new MusicPlayer(THEME, 0.45);
   private readonly speech: Speech;
   private drag: "hour" | "minute" | null = null;
   private dragTarget: "set" | "sandbox" = "set";
@@ -136,7 +141,7 @@ export class TimeIslandsGame {
     this.speech = new Speech(config.voiceOn);
     this.save_ = new LocalSave<SaveData>({
       key: SAVE_KEY,
-      defaults: { lang: "cs", done: {}, stickers: [], guide: DEFAULT_GUIDE, seenIntro: false },
+      defaults: { lang: "cs", done: {}, stickers: [], guide: DEFAULT_GUIDE, musicOn: false, seenIntro: false },
     });
     const saved = this.save_.load();
     // Guard against hand-edited or truncated blobs before reconciling.
@@ -151,6 +156,7 @@ export class TimeIslandsGame {
       done: saved.done,
       stickers: saved.stickers,
       guide,
+      musicOn: saved.musicOn === true,
       cheatUnlocked: false,
       // First-time visitors land in the guided tutorial.
       screen: saved.seenIntro ? "map" : "intro",
@@ -211,8 +217,32 @@ export class TimeIslandsGame {
       done: this.s.done,
       stickers: this.s.stickers,
       guide: this.s.guide,
+      musicOn: this.s.musicOn,
       seenIntro: this.s.seenIntro,
     });
+  }
+
+  /**
+   * Turn the background music on or off. Autoplay is blocked until the page has
+   * been interacted with, so this is driven by the button; a session that left
+   * the music on picks it up on the first gesture instead (see `main.tsx`).
+   */
+  toggleMusic(): void {
+    const on = !this.s.musicOn;
+    this.sounds.tap();
+    if (on) this.music.start();
+    else this.music.stop();
+    this.store.setState({ musicOn: on }, () => this.save());
+  }
+
+  /** Resume music left switched on in a previous session, once allowed. */
+  armMusic(): void {
+    if (this.s.musicOn) this.music.armAutostart();
+  }
+
+  /** True while the loop is actually sounding (not merely enabled). */
+  musicPlaying(): boolean {
+    return this.music.isPlaying();
   }
 
   /** The band member currently guiding the game (Derpy until one is chosen). */

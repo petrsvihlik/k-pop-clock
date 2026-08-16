@@ -57,6 +57,16 @@ export function MapScreen({ game, state }: { game: TimeIslandsGame; state: GameS
         >
           {L.stickers} · {stickerCount}
         </button>
+        {/* background music on/off */}
+        <button
+          onClick={() => game.toggleMusic()}
+          class="press-3"
+          aria-pressed={state.musicOn}
+          aria-label={L.music}
+          style={`background:${state.musicOn ? "#ffcf5c" : "#2c1b57"};color:${state.musicOn ? "#2a1a4a" : "#fff7f0"};border:3px solid ${state.musicOn ? "#2a1a4a" : "#3b2f63"};border-radius:999px;padding:10px 18px;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 0 #120a2e`}
+        >
+          {state.musicOn ? "♪" : "♪̸"} {L.music}
+        </button>
         {/* on-demand reload, for pulling a fresh release onto an installed copy */}
         <button
           onClick={reloadForUpdate}

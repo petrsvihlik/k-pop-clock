@@ -43,6 +43,8 @@ export interface Strings {
   guideSet: string;
   /** Completion overlay: start the next island. */
   next: string;
+  /** Music toggle button label. */
+  music: string;
   /** Closing concert: the stage node on the map and its screen title. */
   finale: string;
   /** Closing concert: the band's chant, shown in speech bubbles. */
@@ -101,6 +103,7 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "Vezmi mě s sebou!",
     guideSet: "Teď tě provázím hrou!",
     next: "Další ostrov",
+    music: "Hudba",
     finale: "Velký koncert",
     finaleChant: "This is how it's DONE DONE DONE!",
     toFinale: "Na pódium!",
@@ -181,6 +184,7 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "Take me with you!",
     guideSet: "I'm your guide now!",
     next: "Next island",
+    music: "Music",
     finale: "The big concert",
     finaleChant: "This is how it's DONE DONE DONE!",
     toFinale: "To the stage!",
@@ -261,6 +265,7 @@ export const STR: Record<Lang, Strings> = {
     makeGuide: "¡Llévame contigo!",
     guideSet: "¡Ahora soy tu guía!",
     next: "Siguiente isla",
+    music: "Música",
     finale: "El gran concierto",
     finaleChant: "This is how it's DONE DONE DONE!",
     toFinale: "¡Al escenario!",

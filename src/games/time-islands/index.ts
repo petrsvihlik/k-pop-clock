@@ -12,5 +12,6 @@ export type { PhaseKey, Celestial } from "./daytime.ts";
 export { ROUTINES, routineAt } from "./routine.ts";
 export type { Routine } from "./routine.ts";
 export type { Question, Option, Card } from "./questions.ts";
+export { THEME } from "./music.ts";
 export { DEFAULT_CONFIG } from "./config.ts";
 export type { GameplayConfig, HandSnap } from "./config.ts";

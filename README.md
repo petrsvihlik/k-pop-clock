@@ -40,6 +40,9 @@ Beyond the seven quiz islands, the app teaches the underlying concepts:
   minute hand.
 - **🎤 The big concert** — the finale, unlocked when every island is done: the
   whole band on a lit podium with microphones and floating notes.
+- **♪ Music** — an optional background loop, off by default, toggled from the
+  map and remembered. Like every other sound in the game it is synthesised from
+  note data rather than played from an audio file.
 
 On the first three islands the answer choices are tinted to match the hands —
 the hour in pink, the minutes in blue — so the mapping is visible before it is
@@ -83,6 +86,7 @@ src/
     save.ts               versioned, fault-tolerant localStorage persistence
     audio.ts              WebAudio synth (no audio files)
     speech.ts             text-to-speech, with per-character voice profiles
+    music.ts              loops note data through WebAudio (no audio files)
     updates.ts            "a new version is deployed" checker
     rng.ts                random helpers
   games/time-islands/   the game as data + logic (no rendering)
@@ -92,6 +96,7 @@ src/
     daytime.ts            time-of-day -> sky phase, sun/moon position
     routine.ts            daily-routine anchors (breakfast, school, …)
     questions.ts          per-island question generators (pure functions)
+    music.ts              the background loop as note data
     game.ts               TimeIslandsGame controller (owns all state)
     config.ts             tunable gameplay settings
   ui/                   Preact view layer (a pure projection of game state)
@@ -139,6 +144,9 @@ Adding levels is meant to be cheap — nothing is hardcoded to "seven".
   draws them from their traits.
 - **A new language** — add a block to `STR` in `i18n.ts` and its BCP-47 tag to
   `SPEECH_LANG`.
+- **Different music** — replace `THEME` in `games/time-islands/music.ts` with
+  another `MusicLoop`: a length in seconds plus tracks of
+  `[startSeconds, durationSeconds, midiNote]`. Nothing else changes.
 - **A different game entirely** — reuse everything under `src/engine/` and write
   a new `games/<name>/` + `ui/`.
 

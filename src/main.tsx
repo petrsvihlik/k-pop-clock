@@ -9,6 +9,10 @@ const game = new TimeIslandsGame(DEFAULT_CONFIG);
 // Console handle for manual testing (pairs with the iddqd cheat).
 (window as unknown as { game: TimeIslandsGame }).game = game;
 
+// Music left on in a previous session resumes at the first user gesture,
+// which is the earliest point browsers allow audio to start.
+game.armMusic();
+
 // Doom-style test cheat: typing "iddqd" anywhere unlocks every island and band member.
 let typed = "";
 window.addEventListener("keydown", (e) => {
