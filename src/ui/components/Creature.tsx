@@ -907,54 +907,63 @@ function MagpieProfile({ sticker, width = 104, height = 137 }: CreatureProps) {
   const beak = sticker.beakColor ?? "#ff9d5c";
   const iris = sticker.eyeColor ?? "#ffcf5c";
   const sheen = "#7de2ff";
-  const eyeYs = sticker.tripleEyes ? [41, 51.5, 62] : [51.5];
+  // The eyes run down the head and onto the neck, following its lean.
+  const eyes: ReadonlyArray<readonly [number, number]> = sticker.tripleEyes
+    ? [
+        [61, 32],
+        [57.5, 46],
+        [54, 60],
+      ]
+    : [[61, 34]];
   return (
     <svg width={width} height={height} viewBox="0 0 100 132">
       {/* long tail sweeping back and down, base hidden inside the body */}
-      <path d="M34 94 L6 122 L12 128 L40 108 Z" fill={dark} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M30 105 L14 121" stroke={sheen} stroke-width="2" stroke-linecap="round" opacity="0.35" />
+      <path d="M30 100 L4 124 L11 131 L38 110 Z" fill={dark} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+      <path d="M26 110 L12 124" stroke={sheen} stroke-width="2" stroke-linecap="round" opacity="0.35" />
 
       {/* legs and toes */}
       <g stroke="#ff9d3d" stroke-linecap="round" stroke-linejoin="round" fill="none">
-        <path d="M40 116 L38 125 M50 116 L49 125" stroke-width="3" />
-        <path d="M32 126.5 L38 125 L38 128.5 M38 125 L44 126.5 M43 126.5 L49 125 L49 128.5 M49 125 L55 126.5" stroke-width="2.5" />
+        <path d="M38 118 L36 127 M48 118 L47 127" stroke-width="3" />
+        <path d="M30 128.5 L36 127 L36 130.5 M36 127 L42 128.5 M41 128.5 L47 127 L47 130.5 M47 127 L53 128.5" stroke-width="2.5" />
       </g>
 
-      {/* neck bridge, body, belly */}
-      <ellipse cx="52" cy="76" rx="14" ry="8" fill={c} />
-      <ellipse cx="46" cy="98" rx="25" ry="21" fill={c} stroke={OUTLINE} stroke-width="3" />
-      <ellipse cx="54" cy="104" rx="14" ry="11" fill={belly} />
+      {/* neck: one tapered column from the body up to the head, drawn first so
+          the body and head close over its ends and the join reads seamless */}
+      <path d="M32 96 Q38 68 49 43 L65 46 Q60 74 60 102 Z" fill={c} stroke={OUTLINE} stroke-width="3" stroke-linejoin="round" />
+
+      {/* body and belly */}
+      <ellipse cx="42" cy="103" rx="26" ry="20" fill={c} stroke={OUTLINE} stroke-width="3" />
+      <ellipse cx="50" cy="108" rx="15" ry="12" fill={belly} />
 
       {/* folded wing along the back, white shoulder patch, iridescent sheen */}
-      <path d="M46 84 Q26 90 22 110 Q34 106 56 90 Z" fill={dark} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
-      <ellipse cx="44" cy="88" rx="5" ry="3.5" fill={belly} />
-      <path d="M40 92 Q30 98 27 106" stroke={sheen} stroke-width="2" stroke-linecap="round" fill="none" opacity="0.35" />
+      <path d="M40 90 Q20 96 16 114 Q30 110 50 94 Z" fill={dark} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+      <ellipse cx="38" cy="93" rx="5" ry="3.5" fill={belly} />
+      <path d="M34 98 Q24 104 21 111" stroke={sheen} stroke-width="2" stroke-linecap="round" fill="none" opacity="0.35" />
 
-      {/* head — a circle, not a balloon: about the body's size */}
-      <ellipse cx="52" cy="72" rx="8" ry="6" fill={c} stroke={OUTLINE} stroke-width="3" />
-      <circle cx="56" cy="52" r="23" fill={c} stroke={OUTLINE} stroke-width="3" />
-      <ellipse cx="47" cy="40" rx="7" ry="4" fill={sheen} opacity="0.3" transform="rotate(-30 47 40)" />
+      {/* head — small and slim, riding on top of the neck */}
+      <ellipse cx="58" cy="37" rx="15" ry="13" fill={c} stroke={OUTLINE} stroke-width="3" />
+      <ellipse cx="52" cy="29" rx="6" ry="3.5" fill={sheen} opacity="0.3" transform="rotate(-25 52 29)" />
 
       {/* beak pointing forward */}
-      <polygon points="77,46 95,52.5 77,58" fill={beak} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
-      <path d="M79 48 L91 51.5" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.35" />
+      <polygon points="70,32 92,38 70,44" fill={beak} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+      <path d="M72 34 L88 37.5" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.35" />
 
-      {/* stacked eyes down the front of the face */}
-      {eyeYs.map((cy) => (
-        <g key={cy}>
-          <circle cx="64" cy={cy} r="4.5" fill={iris} stroke={OUTLINE} stroke-width="2" />
-          <circle cx="65" cy={cy} r="2.2" fill={OUTLINE} />
-          <circle cx="63.6" cy={cy - 1.4} r="0.9" fill="#ffffff" />
+      {/* eyes stacked from the crown down the neck */}
+      {eyes.map(([cx, cy]) => (
+        <g key={`${cx}-${cy}`}>
+          <circle cx={cx} cy={cy} r="4.5" fill={iris} stroke={OUTLINE} stroke-width="2" />
+          <circle cx={cx + 1} cy={cy} r="2.2" fill={OUTLINE} />
+          <circle cx={cx - 0.4} cy={cy - 1.4} r="0.9" fill="#ffffff" />
         </g>
       ))}
-      <ellipse cx="73" cy="63" rx="3.5" ry="2.2" fill="#d9267b" opacity="0.45" />
+      <ellipse cx="49" cy="45" rx="3.5" ry="2.2" fill="#d9267b" opacity="0.45" />
 
       {/* hat: flat brim, taller tapered crown */}
       {sticker.topHat && (
         <g>
-          <ellipse cx="55" cy="28" rx="19" ry="4.5" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" />
-          <path d="M43 29 L47.5 8 Q55 4.5 62.5 8 L67 29 Z" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
-          <path d="M44.6 23 L65.4 23" stroke="#3b2f63" stroke-width="3.5" />
+          <ellipse cx="59" cy="23" rx="18" ry="4.5" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" />
+          <path d="M48 24 L52 6 Q59 3 66 6 L70 24 Z" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+          <path d="M49.5 18 L68.5 18" stroke="#3b2f63" stroke-width="3.5" />
         </g>
       )}
     </svg>
