@@ -4,8 +4,9 @@ import type { Accessory, Ears, Hair, Sticker } from "@game/index.ts";
  * Chibi band members: oversized head, no neck, stubby limbs, big glossy eyes.
  * `Chibi` is the shared parameterised drawing; `Creature` maps a Sticker's
  * traits onto it (the Mascot reuses it with fixed props). Creatures are furry
- * blobs, humans (skin set) get hair + outfits, spirits (tiger/magpie) get
- * animal detailing — all sharing the same body plan and eye language.
+ * blobs, humans (skin set) get hair + outfits, the tiger spirit gets animal
+ * detailing — all sharing the same body plan and eye language. The magpie is
+ * the one exception: a side-view bird with its own drawing (`MagpieProfile`).
  */
 
 const OUTLINE = "#2a1a4a";
@@ -46,7 +47,6 @@ export interface ChibiProps {
   wink?: boolean;
   lids?: boolean;
   tiger?: boolean;
-  magpie?: boolean;
   eyeColor?: string;
   wideEyes?: boolean;
   topHat?: boolean;
@@ -89,7 +89,6 @@ export function Chibi({
   wink = false,
   lids = false,
   tiger = false,
-  magpie = false,
   eyeColor,
   wideEyes = false,
   topHat = false,
@@ -99,12 +98,11 @@ export function Chibi({
   height = 137,
 }: ChibiProps) {
   const human = !!skin;
-  const spirit = tiger || magpie;
   const headFill = human ? skin! : c;
   // A crop top bares the midriff: the body itself renders in skin tone.
   const bodyFill = cropTop ? skin! : (shirt ?? outfit ?? "#2c1b57");
-  const armFill = muscle ? skin! : magpie ? "#1f2a52" : human ? (openJacket ?? bodyFill) : c;
-  const feetFill = human ? (gat ? "#17102b" : CREAM) : magpie ? "#ff9d3d" : c;
+  const armFill = muscle ? skin! : human ? (openJacket ?? bodyFill) : c;
+  const feetFill = human ? (gat ? "#17102b" : CREAM) : c;
   const smile = !bird && !snake && !derp && !tiger;
   // The hair sprout only fits on creatures with a free head top.
   const ahoge = !human && acc !== "star" && acc !== "bolt" && !snake && !topHat;
@@ -155,9 +153,6 @@ export function Chibi({
           <path d="M80 111 L85 108 M83 104 L87 102" stroke="#1a1030" stroke-width="3" stroke-linecap="round" />
         </g>
       )}
-      {magpie && (
-        <polygon points="30,110 36,116 14,128" fill="#1f2a52" stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
-      )}
       {/* long pigtails hang behind the shoulders; the roots tuck under the head, ties go on later */}
       {human && hair === "pigtails" && (
         <g>
@@ -206,8 +201,8 @@ export function Chibi({
         stroke-width="3"
         transform={`rotate(-18 ${50 + armDx} 90)`}
       />
-      {spirit && <ellipse cx="50" cy="99" rx="13" ry="11" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
-      {!spirit && !human && <circle cx="50" cy="99" r="11.5" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
+      {tiger && <ellipse cx="50" cy="99" rx="13" ry="11" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
+      {!tiger && !human && <circle cx="50" cy="99" r="11.5" fill={accent} stroke={OUTLINE} stroke-width="2.5" />}
 
       {/* outfit detailing */}
       {shorts && (
@@ -303,15 +298,7 @@ export function Chibi({
       {/* head overlapping the body — the no-neck chibi merge */}
       <ellipse cx="50" cy="46" rx="33" ry="30" fill={headFill} stroke={OUTLINE} stroke-width="3.5" />
       {!human && (
-        <ellipse
-          cx="37"
-          cy="30"
-          rx="11"
-          ry="6"
-          fill={magpie ? "#7de2ff" : "#ffffff"}
-          opacity={magpie ? 0.3 : 0.18}
-          transform="rotate(-16 37 30)"
-        />
+        <ellipse cx="37" cy="30" rx="11" ry="6" fill="#ffffff" opacity="0.18" transform="rotate(-16 37 30)" />
       )}
       {ahoge && <path d="M50 17 Q47 5 57 7 Q51 10 52 17 Z" fill={c} stroke={OUTLINE} stroke-width="3" stroke-linejoin="round" />}
 
@@ -542,8 +529,75 @@ export interface CreatureProps {
   height?: number;
 }
 
+/**
+ * The magpie spirit, drawn in profile facing right: long tail, folded wing
+ * with the white shoulder patch, white belly, forward beak. Keeps the band's
+ * eye language (stacked yellow eyes) and the hat, but on a bird silhouette.
+ */
+function MagpieProfile({ sticker, width = 104, height = 137 }: CreatureProps) {
+  const c = sticker.color;
+  const dark = "#1f2a52";
+  const belly = sticker.accent ?? CREAM;
+  const beak = sticker.beakColor ?? "#ff9d5c";
+  const iris = sticker.eyeColor ?? "#ffcf5c";
+  const sheen = "#7de2ff";
+  const eyeYs = sticker.tripleEyes ? [41, 51.5, 62] : [51.5];
+  return (
+    <svg width={width} height={height} viewBox="0 0 100 132">
+      {/* long tail sweeping back and down, base hidden inside the body */}
+      <path d="M34 94 L6 122 L12 128 L40 108 Z" fill={dark} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+      <path d="M30 105 L14 121" stroke={sheen} stroke-width="2" stroke-linecap="round" opacity="0.35" />
+
+      {/* legs and toes */}
+      <g stroke="#ff9d3d" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M40 116 L38 125 M50 116 L49 125" stroke-width="3" />
+        <path d="M32 126.5 L38 125 L38 128.5 M38 125 L44 126.5 M43 126.5 L49 125 L49 128.5 M49 125 L55 126.5" stroke-width="2.5" />
+      </g>
+
+      {/* neck bridge, body, belly */}
+      <ellipse cx="52" cy="76" rx="14" ry="8" fill={c} />
+      <ellipse cx="46" cy="98" rx="25" ry="21" fill={c} stroke={OUTLINE} stroke-width="3" />
+      <ellipse cx="54" cy="104" rx="14" ry="11" fill={belly} />
+
+      {/* folded wing along the back, white shoulder patch, iridescent sheen */}
+      <path d="M46 84 Q26 90 22 110 Q34 106 56 90 Z" fill={dark} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+      <ellipse cx="44" cy="88" rx="5" ry="3.5" fill={belly} />
+      <path d="M40 92 Q30 98 27 106" stroke={sheen} stroke-width="2" stroke-linecap="round" fill="none" opacity="0.35" />
+
+      {/* head — a circle, not a balloon: about the body's size */}
+      <ellipse cx="52" cy="72" rx="8" ry="6" fill={c} stroke={OUTLINE} stroke-width="3" />
+      <circle cx="56" cy="52" r="23" fill={c} stroke={OUTLINE} stroke-width="3" />
+      <ellipse cx="47" cy="40" rx="7" ry="4" fill={sheen} opacity="0.3" transform="rotate(-30 47 40)" />
+
+      {/* beak pointing forward */}
+      <polygon points="77,46 95,52.5 77,58" fill={beak} stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+      <path d="M79 48 L91 51.5" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.35" />
+
+      {/* stacked eyes down the front of the face */}
+      {eyeYs.map((cy) => (
+        <g key={cy}>
+          <circle cx="64" cy={cy} r="4.5" fill={iris} stroke={OUTLINE} stroke-width="2" />
+          <circle cx="65" cy={cy} r="2.2" fill={OUTLINE} />
+          <circle cx="63.6" cy={cy - 1.4} r="0.9" fill="#ffffff" />
+        </g>
+      ))}
+      <ellipse cx="73" cy="63" rx="3.5" ry="2.2" fill="#d9267b" opacity="0.45" />
+
+      {/* hat: flat brim, taller tapered crown */}
+      {sticker.topHat && (
+        <g>
+          <ellipse cx="55" cy="28" rx="19" ry="4.5" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" />
+          <path d="M43 29 L47.5 8 Q55 4.5 62.5 8 L67 29 Z" fill="#17102b" stroke={OUTLINE} stroke-width="2.5" stroke-linejoin="round" />
+          <path d="M44.6 23 L65.4 23" stroke="#3b2f63" stroke-width="3.5" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
 /** The collectible band member, drawn from a Sticker's traits. */
 export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) {
+  if (sticker.magpie) return <MagpieProfile sticker={sticker} width={width} height={height} />;
   return (
     <Chibi
       color={sticker.color}
@@ -578,7 +632,6 @@ export function Creature({ sticker, width = 104, height = 137 }: CreatureProps) 
       wink={sticker.wink}
       lids={sticker.lids}
       tiger={sticker.tiger}
-      magpie={sticker.magpie}
       eyeColor={sticker.eyeColor}
       wideEyes={sticker.wideEyes}
       topHat={sticker.topHat}

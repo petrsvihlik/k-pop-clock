@@ -98,7 +98,7 @@ export interface Sticker {
   // Animal spirits.
   /** Korean tiger spirit: stripes, muzzle, goofy grin, striped tail. */
   tiger?: boolean;
-  /** Magpie spirit: dark wings, tail feathers, bird feet, sharp brows. */
+  /** Magpie spirit: drawn in side view with its own bird silhouette. */
   magpie?: boolean;
 
   /** Iris color around the pupils (default: solid dark eyes). */
