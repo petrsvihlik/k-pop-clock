@@ -5,9 +5,12 @@
  * prototype's style-active behaviour.
  */
 
+/* The web font lives here rather than on a single screen's wrapper, so every
+   entry point inherits it — the game, the completion overlay, and ?gallery. */
 body {
   margin: 0;
   background: #1c1140;
+  font-family: "Baloo 2", system-ui, sans-serif;
 }
 
 a {
