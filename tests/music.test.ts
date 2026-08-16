@@ -1,164 +1,109 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MusicPlayer, midiToFreq, type MusicLoop } from "@engine/index.ts";
+import { MusicPlayer } from "@engine/index.ts";
 import { THEME, TimeIslandsGame } from "@game/index.ts";
 
-/** Records everything the player asks the audio context to make. */
-function spyContext() {
-  const started: Array<{ freq: number; type: string; at: number; stop: number }> = [];
-  const state = { now: 0, resumed: 0, state: "running" as string };
-  class FakeCtx {
-    get currentTime() {
-      return state.now;
+/** Stand-in for HTMLAudioElement that records what the player asks of it. */
+function spyAudio({ blocked = false } = {}) {
+  const made: FakeAudio[] = [];
+  class FakeAudio {
+    src = "";
+    loop = false;
+    preload = "";
+    volume = 1;
+    currentTime = 0;
+    playing = false;
+    plays = 0;
+    pauses = 0;
+    constructor() {
+      made.push(this);
     }
-    get state() {
-      return state.state;
-    }
-    destination = {};
-    resume() {
-      state.resumed += 1;
-      state.state = "running";
+    play(): Promise<void> {
+      this.plays += 1;
+      if (blocked) return Promise.reject(new Error("NotAllowedError"));
+      this.playing = true;
       return Promise.resolve();
     }
-    createGain() {
-      return {
-        gain: {
-          value: 0,
-          setValueAtTime() {},
-          exponentialRampToValueAtTime() {},
-          setTargetAtTime() {},
-        },
-        connect() {},
-      };
-    }
-    createOscillator() {
-      const o = {
-        type: "sine",
-        frequency: { value: 0 },
-        connect() {},
-        start(at: number) {
-          o._at = at;
-        },
-        stop(at: number) {
-          started.push({ freq: o.frequency.value, type: o.type, at: o._at, stop: at });
-        },
-        _at: 0,
-      };
-      return o;
+    pause(): void {
+      this.pauses += 1;
+      this.playing = false;
     }
   }
-  vi.stubGlobal("AudioContext", FakeCtx);
-  return { started, state };
+  vi.stubGlobal("Audio", FakeAudio);
+  return { made, latest: () => made.at(-1)! };
 }
 
-const TINY: MusicLoop = {
-  seconds: 2,
-  tracks: [{ wave: "square", gain: 0.2, notes: [[0, 0.5, 69], [1, 0.5, 72]] }],
-};
+const TRACK = { url: "theme.mp3", volume: 0.4 };
 
-beforeEach(() => vi.useFakeTimers());
-afterEach(() => {
-  vi.useRealTimers();
-  vi.unstubAllGlobals();
+beforeEach(() => {
+  localStorage.clear();
 });
-
-describe("midiToFreq", () => {
-  it("anchors A4 at 440 Hz and doubles each octave", () => {
-    expect(midiToFreq(69)).toBeCloseTo(440);
-    expect(midiToFreq(81)).toBeCloseTo(880);
-    expect(midiToFreq(57)).toBeCloseTo(220);
-    expect(midiToFreq(60)).toBeCloseTo(261.63, 1);
-  });
-});
+afterEach(() => vi.unstubAllGlobals());
 
 describe("MusicPlayer", () => {
-  it("does not sound until it is started", () => {
-    const { started } = spyContext();
-    const player = new MusicPlayer(TINY);
-    vi.advanceTimersByTime(500);
+  it("does not touch audio until it is started", () => {
+    const { made } = spyAudio();
+    const player = new MusicPlayer(TRACK);
     expect(player.isPlaying()).toBe(false);
-    expect(started).toHaveLength(0);
+    expect(made).toHaveLength(0);
   });
 
-  it("schedules only what is due, then the rest as the clock advances", () => {
-    const { started, state } = spyContext();
-    const player = new MusicPlayer(TINY);
+  it("plays the track on a loop when started", () => {
+    const { latest } = spyAudio();
+    const player = new MusicPlayer(TRACK);
     player.start();
+    const el = latest();
     expect(player.isPlaying()).toBe(true);
-    // the lookahead is a fraction of a second, so the note at t=1 is not due yet
-    expect(started.map((n) => Math.round(n.freq))).toEqual([440]);
-
-    for (let i = 0; i < 20; i++) {
-      state.now += 0.05;
-      vi.advanceTimersByTime(25);
-    }
-    expect(started.map((n) => Math.round(n.freq)).slice(0, 2)).toEqual([440, 523]);
+    expect(el.src).toBe("theme.mp3");
+    expect(el.loop).toBe(true);
+    expect(el.plays).toBe(1);
+    expect(el.playing).toBe(true);
   });
 
-  it("keeps looping, repeating the phrase", () => {
-    const { started, state } = spyContext();
-    const player = new MusicPlayer(TINY);
+  it("defers the download until the music is wanted", () => {
+    const { latest } = spyAudio();
+    new MusicPlayer(TRACK).start();
+    // nothing should be fetched on page load, only when play is requested
+    expect(latest().preload).toBe("none");
+  });
+
+  it("applies the track's volume, clamped to a sane range", () => {
+    const { latest } = spyAudio();
+    const player = new MusicPlayer(TRACK);
     player.start();
-    const first = started.length;
-    // walk the audio clock forward through two more loop lengths
-    for (let i = 0; i < 200; i++) {
-      state.now += 0.05;
-      vi.advanceTimersByTime(25);
-    }
-    expect(started.length).toBeGreaterThan(first * 3);
-    // every scheduled note is one of the two in the loop
-    for (const n of started) expect([440, 523]).toContain(Math.round(n.freq));
+    expect(latest().volume).toBeCloseTo(0.4);
+    player.setVolume(0.8);
+    expect(latest().volume).toBeCloseTo(0.8);
+    player.setVolume(5);
+    expect(latest().volume).toBe(1);
+    player.setVolume(-2);
+    expect(latest().volume).toBe(0);
   });
 
-  it("never schedules a note in the past", () => {
-    const { started, state } = spyContext();
-    const player = new MusicPlayer(TINY);
+  it("reuses one element rather than stacking playbacks", () => {
+    const { made } = spyAudio();
+    const player = new MusicPlayer(TRACK);
     player.start();
-    for (let i = 0; i < 100; i++) {
-      state.now += 0.05;
-      vi.advanceTimersByTime(25);
-      for (const n of started) expect(n.at).toBeGreaterThanOrEqual(0);
-    }
-    // and each note stops after it starts
-    for (const n of started) expect(n.stop).toBeGreaterThan(n.at);
-  });
-
-  it("stops on request and can be restarted", () => {
-    const { started, state } = spyContext();
-    const player = new MusicPlayer(TINY);
     player.start();
     player.stop();
-    expect(player.isPlaying()).toBe(false);
-    const afterStop = started.length;
-    for (let i = 0; i < 100; i++) {
-      state.now += 0.05;
-      vi.advanceTimersByTime(25);
-    }
-    expect(started).toHaveLength(afterStop);
     player.start();
-    expect(player.isPlaying()).toBe(true);
+    expect(made).toHaveLength(1);
+    expect(made[0]!.plays).toBe(2);
   });
 
-  it("ignores a second start", () => {
-    spyContext();
-    const player = new MusicPlayer(TINY);
+  it("stops and rewinds, so the next start begins at the top", () => {
+    const { latest } = spyAudio();
+    const player = new MusicPlayer(TRACK);
     player.start();
-    player.start();
-    expect(player.isPlaying()).toBe(true);
+    latest().currentTime = 42;
     player.stop();
     expect(player.isPlaying()).toBe(false);
-  });
-
-  it("resumes a suspended context, as browsers require after a gesture", () => {
-    const { state } = spyContext();
-    state.state = "suspended";
-    const player = new MusicPlayer(TINY);
-    player.start();
-    expect(state.resumed).toBeGreaterThan(0);
+    expect(latest().pauses).toBe(1);
+    expect(latest().currentTime).toBe(0);
   });
 
   it("starts on the first gesture when autostart is armed", () => {
-    spyContext();
-    const player = new MusicPlayer(TINY);
+    spyAudio();
+    const player = new MusicPlayer(TRACK);
     player.armAutostart();
     expect(player.isPlaying()).toBe(false);
     window.dispatchEvent(new Event("pointerdown"));
@@ -166,65 +111,53 @@ describe("MusicPlayer", () => {
   });
 
   it("forgets an armed autostart once cancelled", () => {
-    spyContext();
-    const player = new MusicPlayer(TINY);
+    spyAudio();
+    const player = new MusicPlayer(TRACK);
     player.armAutostart();
     player.cancelAutostart();
     window.dispatchEvent(new Event("pointerdown"));
     expect(player.isPlaying()).toBe(false);
   });
 
-  it("survives a browser with no audio at all", () => {
-    vi.stubGlobal("AudioContext", undefined);
-    const player = new MusicPlayer(TINY);
+  it("does not claim to be playing when the browser blocks it", async () => {
+    const { latest } = spyAudio({ blocked: true });
+    const player = new MusicPlayer(TRACK);
+    player.start();
+    await vi.waitFor(() => expect(player.isPlaying()).toBe(false));
+
+    // it re-arms, so the next gesture tries again rather than giving up
+    window.dispatchEvent(new Event("pointerdown"));
+    expect(latest().plays).toBe(2);
+    await vi.waitFor(() => expect(player.isPlaying()).toBe(false));
+  });
+
+  it("survives a browser with no audio support", () => {
+    vi.stubGlobal("Audio", undefined);
+    const player = new MusicPlayer(TRACK);
     expect(() => player.start()).not.toThrow();
     expect(player.isPlaying()).toBe(false);
     expect(() => player.stop()).not.toThrow();
-  });
-
-  it("clamps the volume to a sane range", () => {
-    spyContext();
-    const player = new MusicPlayer(TINY);
-    expect(() => {
-      player.setVolume(5);
-      player.setVolume(-2);
-    }).not.toThrow();
+    expect(() => player.setVolume(0.5)).not.toThrow();
   });
 });
 
 describe("the theme", () => {
-  it("is a well-formed loop", () => {
-    expect(THEME.seconds).toBeGreaterThan(0);
-    expect(THEME.tracks.length).toBeGreaterThan(0);
-    for (const track of THEME.tracks) {
-      expect(track.notes.length).toBeGreaterThan(0);
-      expect(track.gain).toBeGreaterThan(0);
-      expect(track.gain).toBeLessThanOrEqual(1);
-      for (const [at, dur, midi] of track.notes) {
-        expect(at, "note starts inside the loop").toBeGreaterThanOrEqual(0);
-        expect(at).toBeLessThan(THEME.seconds);
-        expect(dur).toBeGreaterThan(0);
-        expect(midi).toBeGreaterThanOrEqual(0);
-        expect(midi).toBeLessThanOrEqual(127);
-      }
-    }
-  });
-
-  it("keeps the combined level from clipping", () => {
-    const total = THEME.tracks.reduce((sum, t) => sum + t.gain, 0);
-    expect(total).toBeLessThan(1);
+  it("points at a bundled audio file at a sensible level", () => {
+    expect(THEME.url).toMatch(/\.mp3(\?.*)?$/);
+    expect(THEME.volume).toBeGreaterThan(0);
+    expect(THEME.volume).toBeLessThanOrEqual(1);
   });
 });
 
 describe("the music toggle", () => {
   it("starts off, and stays off across reloads until switched on", () => {
-    spyContext();
+    spyAudio();
     expect(new TimeIslandsGame().store.get().musicOn).toBe(false);
     expect(new TimeIslandsGame().store.get().musicOn).toBe(false);
   });
 
   it("switches on and off, and remembers the choice", () => {
-    spyContext();
+    spyAudio();
     const game = new TimeIslandsGame();
     game.toggleMusic();
     expect(game.store.get().musicOn).toBe(true);
@@ -238,10 +171,9 @@ describe("the music toggle", () => {
   });
 
   it("does not autoplay on load, but resumes at the first gesture", () => {
-    spyContext();
+    spyAudio();
     const first = new TimeIslandsGame();
     first.toggleMusic();
-    expect(first.store.get().musicOn).toBe(true);
 
     const reloaded = new TimeIslandsGame();
     reloaded.armMusic();
@@ -251,7 +183,7 @@ describe("the music toggle", () => {
   });
 
   it("stays silent on a fresh save even after a gesture", () => {
-    spyContext();
+    spyAudio();
     const game = new TimeIslandsGame();
     game.armMusic();
     window.dispatchEvent(new Event("pointerdown"));

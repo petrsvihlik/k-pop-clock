@@ -124,7 +124,7 @@ export class TimeIslandsGame {
   private readonly save_: LocalSave<SaveData>;
   private readonly audio = new AudioEngine();
   private readonly sounds = new Sounds(this.audio);
-  private readonly music = new MusicPlayer(THEME, 0.45);
+  private readonly music = new MusicPlayer(THEME);
   private readonly speech: Speech;
   private drag: "hour" | "minute" | null = null;
   private dragTarget: "set" | "sandbox" = "set";

@@ -17,8 +17,8 @@ export type { Note, OscType } from "./audio.ts";
 export { Speech } from "./speech.ts";
 export type { VoiceGender, VoiceProfile } from "./speech.ts";
 
-export { MusicPlayer, midiToFreq } from "./music.ts";
-export type { MusicLoop, MusicNote, MusicTrack } from "./music.ts";
+export { MusicPlayer } from "./music.ts";
+export type { MusicTrack } from "./music.ts";
 
 export { randInt, pick, shuffle } from "./rng.ts";
 
